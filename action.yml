@@ -32,12 +32,6 @@ runs:
       with:
         python-version: "3.11"
 
-    - name: Install pipenv
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install pipenv
-      shell: bash
-
     - name: Generate requirements.txt
       run: python scripts/generate_requirements.py
       env:
@@ -55,9 +49,15 @@ runs:
         pip install pytest
       shell: bash
 
+    # - name: Show pip list
+    #   run: pip list
+    #   shell: bash
     - name: Execute mutation test
       run: mutmut run --paths-to-mutate ${{ inputs.src_directory }} --runner "pytest ${{ inputs.test_directory }}" --tests-dir ${{ inputs.test_directory }}
       shell: bash
+      continue-on-error: true
+      # If all mutants cannot be killed, an error occurs with an exit code of 2.
+      # Even if an error occurs, continue-on-error is required to allow subsequent steps to be performed
 
     - name: Output mutation test results to a text file.
       run: |
