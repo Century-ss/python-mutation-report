@@ -48,10 +48,8 @@ runs:
         pip install mutmut
         pip install pytest
       shell: bash
+      # pytest may not need to be installed if it is already installed in the lock file
 
-    # - name: Show pip list
-    #   run: pip list
-    #   shell: bash
     - name: Execute mutation test
       run: mutmut run --paths-to-mutate ${{ inputs.src_directory }} --runner "pytest ${{ inputs.test_directory }}" --tests-dir ${{ inputs.test_directory }}
       shell: bash
@@ -64,3 +62,24 @@ runs:
         mutmut show all > result.txt
         cat result.txt
       shell: bash
+
+    # - name: Show github context and environment variable
+    #   run: |
+    #     echo '${{ toJSON(github) }}'
+    #     printenv
+    #   shell: bash
+
+    - name: Post comments to PR
+      # if: ${{ success() && github.event_name == 'pull_request' }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        URL: ${{ github.event.pull_request.html_url }}
+      run: gh pr comment -F result.txt "${URL}"
+      shell: bash
+
+    # - name: Upload artifact text file?
+    #   if: ${{ success() && github.event_name != 'pull_request' }}
+    #   env:
+    #     GITHUB_TOKEN: ${{ github.token }}
+    #     URL: ${{ github.event.pull_request.html_url }}
+    #   run: gh pr comment -F result.txt "${URL}"
