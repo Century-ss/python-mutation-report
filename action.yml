@@ -65,6 +65,7 @@ runs:
 
     - name: Show github event name
       run: echo '${{ toJSON(github) }}'
+      shell: bash
 
     # - name: Post comments
     #   env:
