@@ -1,0 +1,62 @@
+name: "Hello World"
+description: "Greet someone"
+inputs:
+  lock_file_path:
+    description: "Who to greet"
+    required: true
+    default: "World"
+  src_directory:
+    description: "path to mutate"
+    required: true
+    default: "World"
+  test_directory:
+    description: "test path"
+    required: true
+    default: "World"
+# outputs:
+#   random-number:
+#     description: "Random number"
+#     value: ${{ steps.random-number-generator.outputs.random-number }}
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install pipenv
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pipenv
+      shell: bash
+
+    - name: Generate requirements.txt
+      run: python scripts/generate_requirements.py
+      env:
+        LOCK_FILE_PATH: ${{ inputs.lock_file_path }}
+      shell: bash
+
+    - name: Debug requirements.txt
+      run: cat requirements.txt
+      shell: bash
+
+    - name: Install dependencies
+      run: |
+        pip install --no-cache-dir -r requirements.txt
+        pip install mutmut
+        pip install pytest
+      shell: bash
+
+    - name: Execute mutation test
+      run: mutmut run --paths-to-mutate ${{ inputs.src_directory }} --runner "pytest ${{ inputs.test_directory }}" --tests-dir ${{ inputs.test_directory }}
+      shell: bash
+
+    - name: Output mutation test results to a text file.
+      run: |
+        mutmut show all > result.txt
+        cat result.txt
+      shell: bash
