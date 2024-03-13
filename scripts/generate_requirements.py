@@ -1,6 +1,7 @@
 import json
 import os
 
+## Generate requirements.txt from Pipfile.lock
 lock_file_path = os.environ.get("LOCK_FILE_PATH", "Pipfile.lock")
 
 with open(lock_file_path) as f:
