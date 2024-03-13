@@ -5,7 +5,7 @@ lock_file_path = os.environ.get("LOCK_FILE_PATH", "Pipfile.lock")
 
 with open(lock_file_path) as f:
     lock_file = json.load(f)
-
+# 変更
 
 try:
     packages = dict(**lock_file["default"], **lock_file["develop"])
