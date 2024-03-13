@@ -48,10 +48,8 @@ runs:
         pip install mutmut
         pip install pytest
       shell: bash
+      # pytest may not need to be installed if it is already installed in the lock file
 
-    # - name: Show pip list
-    #   run: pip list
-    #   shell: bash
     - name: Execute mutation test
       run: mutmut run --paths-to-mutate ${{ inputs.src_directory }} --runner "pytest ${{ inputs.test_directory }}" --tests-dir ${{ inputs.test_directory }}
       shell: bash
@@ -63,4 +61,12 @@ runs:
       run: |
         mutmut show all > result.txt
         cat result.txt
+      shell: bash
+
+    - name: Output environment variable
+      run: printenv
+      shell: bash
+
+    - name: Output environment variable2
+      run: set
       shell: bash
