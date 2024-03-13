@@ -8,7 +8,10 @@ jobs:
     name: Test mutation report action
     steps:
       - uses: actions/checkout@v4
+
       - id: foo
         uses: ./
         with:
           lock_file_path: "pipenv-project/Pipfile.lock"
+          src_directory: "pipenv-project/src"
+          test_directory: "pipenv-project/tests"

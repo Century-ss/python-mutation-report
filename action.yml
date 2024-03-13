@@ -17,18 +17,11 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Debug input parameters
-      run: |
-        echo "lock_file_path: ${{ inputs.lock_file_path }}"
-        echo "src_directory: ${{ inputs.src_directory }}"
-        echo "test_directory: ${{ inputs.test_directory }}"
-      shell: bash
-
     - name: Validate input parameters is not empty
       run: |
-        [[ "${{ inputs.lock_file_path }}" ]] || { echo "lock_file_path input is empty" ; exit 1; }
-        [[ "${{ inputs.src_directory }}" ]] || { echo "src_directory input is empty" ; exit 1; }
-        [[ "${{ inputs.test_directory }}" ]] || { echo "test_directory input is empty" ; exit 1; }
+        [[ "${{ inputs.lock_file_path }}" ]] || { echo "Error lock_file_path input is empty" ; exit 1; }
+        [[ "${{ inputs.src_directory }}" ]] || { echo "Error src_directory input is empty" ; exit 1; }
+        [[ "${{ inputs.test_directory }}" ]] || { echo "Error test_directory input is empty" ; exit 1; }
       shell: bash
 
     # - name: Checkout
