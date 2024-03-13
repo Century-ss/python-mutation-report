@@ -73,6 +73,7 @@ runs:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
       run: gh pr comment -F result.txt "${URL}"
+      shell: bash
 
     # - name: Post comments to PR
     #   if: ${{ success() && github.event_name != 'pull_request' }}
