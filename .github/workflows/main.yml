@@ -1,6 +1,6 @@
 name: 🧪 Test this repository actions
 
-on: [workflow_dispatch]
+on: [workflow_dispatch, pull_request]
 
 jobs:
   hello_world_job:

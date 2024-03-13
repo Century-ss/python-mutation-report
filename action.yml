@@ -63,11 +63,19 @@ runs:
         cat result.txt
       shell: bash
 
-    - name: Show github event name
+    - name: Show github context
       run: echo '${{ toJSON(github) }}'
       shell: bash
 
-    # - name: Post comments
+    - name: Post comments to PR
+      # if: ${{ success() && github.event_name == 'pull_request' }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        URL: ${{ github.event.pull_request.html_url }}
+      run: gh pr comment -F result.txt "${URL}"
+
+    # - name: Post comments to PR
+    #   if: ${{ success() && github.event_name != 'pull_request' }}
     #   env:
     #     GITHUB_TOKEN: ${{ github.token }}
     #     URL: ${{ github.event.pull_request.html_url }}
