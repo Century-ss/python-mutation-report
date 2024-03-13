@@ -3,7 +3,7 @@ import os
 
 lock_file_path = os.environ.get("LOCK_FILE_PATH", "Pipfile.lock")
 
-with open(lock_file_path) as f:
+with open(lock_file_path, "r") as f:
     lock_file = json.load(f)
 
 
