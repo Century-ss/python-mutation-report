@@ -10,8 +10,6 @@ jobs:
       pull-requests: write
 
     steps:
-      - uses: actions/checkout@v4
-
       - id: foo
         uses: ./
         with:
