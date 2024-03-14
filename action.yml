@@ -24,8 +24,9 @@ runs:
         [[ "${{ inputs.test_directory }}" ]] || { echo "Error test_directory input is empty" ; exit 1; }
       shell: bash
 
-    # - name: Checkout
-    #   uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -33,7 +34,7 @@ runs:
         python-version: "3.11"
 
     - name: Generate requirements.txt
-      run: python scripts/generate_requirements.py
+      run: python3 scripts/generate_requirements_from_pipfile.py
       env:
         LOCK_FILE_PATH: ${{ inputs.lock_file_path }}
       shell: bash
@@ -45,13 +46,16 @@ runs:
     - name: Install dependencies
       run: |
         pip install --no-cache-dir -r requirements.txt
-        pip install mutmut
+        pip install mutmut==2.4.4
         pip install pytest
       shell: bash
       # pytest may not need to be installed if it is already installed in the lock file
 
     - name: Execute mutation test
-      run: mutmut run --paths-to-mutate ${{ inputs.src_directory }} --runner "pytest ${{ inputs.test_directory }}" --tests-dir ${{ inputs.test_directory }}
+      run: |
+        mutmut run --paths-to-mutate ${{ inputs.src_directory }} \
+          --runner "pytest ${{ inputs.test_directory }}" \
+          --tests-dir ${{ inputs.test_directory }} > results/run_result.txt
       shell: bash
       continue-on-error: true
       # If all mutants cannot be killed, an error occurs with an exit code of 2.
@@ -59,8 +63,12 @@ runs:
 
     - name: Output mutation test results to a text file.
       run: |
-        mutmut show all > result.txt
-        cat result.txt
+        mutmut show all > results/show_all_result.txt
+        cat results/show_all_result.txt
+      shell: bash
+
+    - name: Reshape result for PR comment
+      run: python3 scripts/reshape_result_for_PR_comment.py
       shell: bash
 
     # - name: Show github context and environment variable
@@ -74,7 +82,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
-      run: gh pr comment -F result.txt "${URL}"
+      run: gh pr comment -F PR_comment.txt "${URL}"
       shell: bash
 
     # - name: Upload artifact text file?
