@@ -1,0 +1,22 @@
+name: 🧪 Test this repository actions on PR
+
+on: [pull_request]
+
+jobs:
+  hello_world_job:
+    runs-on: ubuntu-latest
+    name: Test mutation report action
+    permissions:
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - id: foo
+        uses: ./
+        with:
+          lock_file_path: "pipenv-project/Pipfile.lock"
+          src_directory: "pipenv-project/src"
+          test_directory: "pipenv-project/tests"
