@@ -17,16 +17,16 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
+
     - name: Validate input parameters is not empty
       run: |
         [[ "${{ inputs.lock_file_path }}" ]] || { echo "Error lock_file_path input is empty" ; exit 1; }
         [[ "${{ inputs.src_directory }}" ]] || { echo "Error src_directory input is empty" ; exit 1; }
         [[ "${{ inputs.test_directory }}" ]] || { echo "Error test_directory input is empty" ; exit 1; }
       shell: bash
-
-    - uses: actions/checkout@v4
-      with:
-        ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
