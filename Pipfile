@@ -12,3 +12,7 @@ requests = "*"
 
 [requires]
 python_version = "3.11"
+
+[scripts]
+mutate = "bash scripts/development/mutmut-run.sh"
+output = "bash scripts/development/mutmut-output.sh"
