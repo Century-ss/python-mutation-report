@@ -26,7 +26,7 @@ legend_description = (
 )
 
 mutant_codes = "".join(show_all_result_rows[7:])
-
+####
 contents = (
     "<details><summary>"
     + summary_text
