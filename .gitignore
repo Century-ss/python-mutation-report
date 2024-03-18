@@ -1,4 +1,12 @@
 **/__pycache__/
 
-result.txt
 .DS_Store
+
+results
+
+.mutmut-cache
+
+.development/
+
+html/
+PR_comment.txt
