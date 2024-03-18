@@ -1,3 +1,3 @@
-mutmut show all > results/show_all_result.txt
+mutmut show all > results/show_all.txt
 mutmut html
-mutmut junitxml > results/xml_result.txt
+mutmut junitxml --suspicious-policy=error > results/junit.xml

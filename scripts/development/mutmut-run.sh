@@ -5,4 +5,4 @@ fi
 
 mutmut run --paths-to-mutate pipenv-project/src \
 --tests-dir pipenv-project/tests \
---runner 'pytest pipenv-project/tests' > results/run_result.txt
+--runner 'python -m pytest pipenv-project/tests' > results/run.txt
