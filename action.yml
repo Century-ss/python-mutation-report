@@ -29,48 +29,56 @@ runs:
         [[ "${{ inputs.test_directory }}" ]] || { echo "Error test_directory input is empty" ; exit 1; }
       shell: bash
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
-
-    - name: Generate requirements.txt
-      run: python3 scripts/generate_requirements_from_pipfile.py
+    - name: Get change file list
       env:
-        LOCK_FILE_PATH: ${{ inputs.lock_file_path }}
+        GITHUB_TOKEN: ${{ github.token }}
+        URL: ${{ github.event.pull_request.html_url }}
+      run: git diff "${URL}" --name-only
       shell: bash
 
-    - name: Debug requirements.txt
-      run: cat requirements.txt
-      shell: bash
+    # - name: Set up Python
+    #   uses: actions/setup-python@v4
+    #   with:
+    #     python-version: "3.11"
 
-    - name: Install dependencies
-      run: |
-        pip install --no-cache-dir -r requirements.txt
-        pip install mutmut==2.4.4
-        pip install pytest
-      shell: bash
-      # pytest may not need to be installed if it is already installed in the lock file
+    # - name: Generate requirements.txt
+    #   run: python3 scripts/generate_requirements_from_pipfile.py
+    #   env:
+    #     LOCK_FILE_PATH: ${{ inputs.lock_file_path }}
+    #   shell: bash
 
-    - name: Execute mutation test
-      run: |
-        mutmut run --paths-to-mutate ${{ inputs.src_directory }} \
-          --runner "pytest ${{ inputs.test_directory }}" \
-          --tests-dir ${{ inputs.test_directory }} > results/run_result.txt
-      shell: bash
-      continue-on-error: true
-      # If all mutants cannot be killed, an error occurs with an exit code of 2.
-      # Even if an error occurs, continue-on-error is required to allow subsequent steps to be performed
+    # - name: Debug requirements.txt
+    #   run: cat requirements.txt
+    #   shell: bash
 
-    - name: Output mutation test results to a text file.
-      run: |
-        mutmut show all > results/show_all_result.txt
-        cat results/show_all_result.txt
-      shell: bash
+    # - name: Install dependencies
+    #   run: |
+    #     pip3 install --no-cache-dir -r requirements.txt
+    #     pip3 install mutmut==2.4.4
+    #     pip3 install beautifulsoup4
+    #     pip3 install pytest
+    #   shell: bash
+    #   # pytest may not need to be installed if it is already installed in the lock file
 
-    - name: Reshape result for PR comment
-      run: python3 scripts/reshape_result_for_PR_comment.py
-      shell: bash
+    # - name: Execute mutation test
+    #   run: |
+    #     mutmut run --paths-to-mutate ${{ inputs.src_directory }} \
+    #       --runner "python3 -m pytest ${{ inputs.test_directory }}" \
+    #       --tests-dir ${{ inputs.test_directory }} > results/run.txt
+    #   shell: bash
+    #   continue-on-error: true
+    #   # If all mutants cannot be killed, an error occurs with an exit code of 2.
+    #   # Even if an error occurs, continue-on-error is required to allow subsequent steps to be performed
+
+    # - name: Output mutation test results to a text file.
+    #   run: |
+    #     mutmut show all > results/show_all_result.txt
+    #     cat results/show_all.txt
+    #   shell: bash
+
+    # - name: Reshape result for PR comment
+    #   run: python3 scripts/reshape_result_for_PR_comment.py
+    #   shell: bash
 
     # - name: Show github context and environment variable
     #   run: |
@@ -78,13 +86,13 @@ runs:
     #     printenv
     #   shell: bash
 
-    - name: Post comments to PR
-      # if: ${{ success() && github.event_name == 'pull_request' }}
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-        URL: ${{ github.event.pull_request.html_url }}
-      run: gh pr comment -F PR_comment.txt "${URL}"
-      shell: bash
+    # - name: Post comments to PR
+    #   # if: ${{ success() && github.event_name == 'pull_request' }}
+    #   env:
+    #     GITHUB_TOKEN: ${{ github.token }}
+    #     URL: ${{ github.event.pull_request.html_url }}
+    #   run: gh pr comment -F PR_comment.txt "${URL}"
+    #   shell: bash
 
     # - name: Upload artifact text file?
     #   if: ${{ success() && github.event_name != 'pull_request' }}
