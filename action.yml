@@ -36,7 +36,8 @@ runs:
         URL: ${{ github.event.pull_request.html_url }}
       run: |
         PR_diff_files=$(gh pr diff "${URL}" --name-only)
-        echo "PR_diff_files=$PR_diff_files >> $GITHUB_OUTPUT
+        echo "PR_diff_files=$PR_diff_files"
+        echo "PR_diff_files=$PR_diff_files" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Debug
