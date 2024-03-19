@@ -35,7 +35,7 @@ runs:
         URL: ${{ github.event.pull_request.html_url }}
       run: |
         echo "URL: ${URL}"
-        gh diff "${URL}" --name-only
+        gh pr diff "${URL}" --name-only
       shell: bash
 
     # - name: Set up Python
