@@ -34,7 +34,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
-      run: gh pr diff "${URL}" --name-only) > results/PR_diff_files.txt
+      run: gh pr diff "${URL}" --name-only > results/PR_diff_files.txt
       # Strings with \n cannot be set in $GITHUB_OUTPUT or $GITHUB_ENV, so use a text file instead.
       shell: bash
 
