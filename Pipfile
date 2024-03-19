@@ -9,10 +9,11 @@ mutmut = "*"
 [dev-packages]
 pytest = "*"
 requests = "*"
+beautifulsoup4 = "*"
 
 [requires]
 python_version = "3.11"
 
 [scripts]
-mutate = "bash scripts/development/mutmut-run.sh"
+mutate = "bash scripts/development/mutmut-mutate.sh"
 output = "bash scripts/development/mutmut-output.sh"
