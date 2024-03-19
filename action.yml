@@ -18,9 +18,9 @@ runs:
   using: "composite"
   steps:
     # if external repository already checked out, it is not necessary to checkout?
-    # - uses: actions/checkout@v4
-    #   with:
-    #     ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
 
     - name: Validate input parameters is not empty
       run: |
@@ -30,18 +30,29 @@ runs:
       shell: bash
 
     - name: Get change file list
+      id: get_change_file_list
       env:
-        # GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
       run: |
-        echo "URL: ${URL}"
-        gh pr diff "${URL}" --name-only
+        PR_diff_files=$(gh pr diff "${URL}" --name-only)
+        echo "PR_diff_files=$PR_diff_files >> $GITHUB_OUTPUT
       shell: bash
 
-    # - name: Set up Python
-    #   uses: actions/setup-python@v4
-    #   with:
-    #     python-version: "3.11"
+    - name: Debug
+      run: echo ${{ steps.get_change_file_list.outputs.PR_diff_files }}
+      shell: bash
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Debug python
+      run: python3 hoge.py
+      env:
+        PR_CHANGED_FILES: ${{ steps.get_change_file_list.outputs.PR_diff_files }}
+      shell: bash
 
     # - name: Generate requirements.txt
     #   run: python3 scripts/generate_requirements_from_pipfile.py
