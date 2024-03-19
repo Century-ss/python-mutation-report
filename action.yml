@@ -34,26 +34,18 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
-      run: |
-        PR_diff_files=$(gh pr diff "${URL}" --name-only)
-        echo "PR_diff_files=$PR_diff_files"
-        echo "PR_diff_files=$PR_diff_files" >> $GITHUB_OUTPUT
+      run: gh pr diff "${URL}" --name-only) > results/PR_diff_files.txt
+      # Strings with \n cannot be set in $GITHUB_OUTPUT or $GITHUB_ENV, so use a text file instead.
       shell: bash
 
     - name: Debug
-      run: echo ${{ steps.get_change_file_list.outputs.PR_diff_files }}
+      run: cat results/PR_diff_files.txt
       shell: bash
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: "3.11"
-
-    - name: Debug python
-      run: python3 hoge.py
-      env:
-        PR_CHANGED_FILES: ${{ steps.get_change_file_list.outputs.PR_diff_files }}
-      shell: bash
 
     # - name: Generate requirements.txt
     #   run: python3 scripts/generate_requirements_from_pipfile.py
