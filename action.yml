@@ -31,7 +31,7 @@ runs:
 
     - name: Get change file list
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        # GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
       run: |
         echo "URL: ${URL}"
@@ -57,7 +57,7 @@ runs:
     #   run: |
     #     pip3 install --no-cache-dir -r requirements.txt
     #     pip3 install mutmut==2.4.4
-    #     pip3 install beautifulsoup4
+    #     pip3 install beautifulsoup4==4.12.3
     #     pip3 install pytest
     #   shell: bash
     #   # pytest may not need to be installed if it is already installed in the lock file
@@ -65,7 +65,7 @@ runs:
     # - name: Execute mutation test
     #   run: |
     #     mutmut run --paths-to-mutate ${{ inputs.src_directory }} \
-    #       --runner "python3 -m pytest ${{ inputs.test_directory }}" \
+    #       --runner "python3 -m pytest -x ${{ inputs.test_directory }}" \
     #       --tests-dir ${{ inputs.test_directory }} > results/run.txt
     #   shell: bash
     #   continue-on-error: true
