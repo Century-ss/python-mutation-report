@@ -64,7 +64,7 @@ for file in file_list:
         "<details><summary>" + file["file_name"] + "</summary>\n\n" + code_blocks + "</details>\n\n"
     )
 
-
+""
 PR_comment = (
     "<details><summary>"
     + main_summary
