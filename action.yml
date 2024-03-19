@@ -66,7 +66,7 @@ runs:
       # pytest may not need to be installed if it is already installed in the lock file
 
     - name: Make mutmut run command from PR changed files
-      run: python3 scripts/make_mutmut_run_command.py
+      run: python3 scripts/make_command_of_run.py
       env:
         SRC_DIRECTORY: ${{ inputs.src_directory }}
         TEST_DIRECTORY: ${{ inputs.test_directory }}
