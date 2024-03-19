@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 
 import bs4
 
-with open("results/run.txt", "r") as f:
+with open("temporary/run.txt", "r") as f:
     run_result_rows = [s.rstrip() for s in f.readlines()]
 
 """ Make main summary text
@@ -23,7 +23,7 @@ legend_description = (
 
 """ Make sub summary and mutants
 """
-tree = ET.parse("results/junit.xml")
+tree = ET.parse("temporary/junit.xml")
 root = tree.getroot()
 line_number_dict = {
     testcase.attrib["name"]: testcase.attrib["line"] for testcase in root.iter("testcase")

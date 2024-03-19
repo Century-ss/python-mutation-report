@@ -2,7 +2,8 @@
 
 .DS_Store
 
-results
+temporary/*
+!temporary/.gitkeep
 
 .mutmut-cache
 
