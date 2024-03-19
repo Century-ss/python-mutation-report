@@ -41,6 +41,13 @@ runs:
       run: cat results/PR_diff_files.txt
       shell: bash
 
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: playwright-report
+        path: results/PR_diff_files.txt
+        retention-days: 1
+
     # - name: Set up Python
     #   uses: actions/setup-python@v4
     #   with:
