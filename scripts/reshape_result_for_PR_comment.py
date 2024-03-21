@@ -1,8 +1,9 @@
+import re
 import xml.etree.ElementTree as ET
 
 import bs4
 
-with open("temporary/run.txt", "r") as f:
+with open("Century-ss/python-mutesting-report/temporary/run.txt", "r") as f:
     run_result_rows = [s.rstrip() for s in f.readlines()]
 
 """ Make main summary text
@@ -23,7 +24,7 @@ legend_description = (
 
 """ Make sub summary and mutants
 """
-tree = ET.parse("temporary/junit.xml")
+tree = ET.parse("Century-ss/python-mutesting-report/temporary/junit.xml")
 root = tree.getroot()
 line_number_dict = {
     testcase.attrib["name"]: testcase.attrib["line"] for testcase in root.iter("testcase")
@@ -35,6 +36,22 @@ file_list = [{"href": a_tag["href"], "file_name": a_tag.get_text()} for a_tag in
 for a_tag in soup.find_all("a"):
     a_tag.replace_with(a_tag.get_text())
 sub_summary = str(soup)
+
+with open("Century-ss/python-mutesting-report/temporary/mutmut-run.sh", "r") as f:
+    run_command = f.read()
+test_files_matched = re.search(r"--tests-dir\s+([^ ]*)", run_command)
+if test_files_matched is not None:
+    test_files = "- " + "\n- ".join(test_files_matched.group(1).split(","))
+else:
+    test_files = "Not matched test directory"
+
+show_test_directories = (
+    "<details><summary>"
+    + "List of test used for mutation"
+    + "</summary>\n\n"
+    + test_files
+    + "\n</details>\n\n"
+)
 
 mutants_per_file = ""
 for file in file_list:
@@ -73,8 +90,9 @@ PR_comment = (
     + legend_description
     + "\n\n"
     + sub_summary
+    + "\n\n"
+    + show_test_directories
     + "※ ⏰Timeout, 🤔Suspicious and 🔇Skipped are not shown in the table."
-    + "\n<br>\n"
     + "\n<br>\n"
     + "※ 🔇Skipped are not shown in the list of mutants"
     + "\n\n"

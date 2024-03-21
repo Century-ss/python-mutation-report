@@ -1,15 +1,23 @@
 name: "Hello World"
 description: "Greet someone"
 inputs:
-  lock_file_path:
-    description: "path of lock file to generate requirements.txt"
+  lock-file-path:
+    description: "Path of lock file to generate requirements.txt"
     required: true
-  src_directory:
-    description: "path of source directory to be muted"
+  src-directory:
+    description: "Path of source directory to be muted"
     required: true
-  test_directory:
-    description: "path of test directory"
+  test-directory:
+    description: "Path of test directory"
     required: true
+  where-to-run-test:
+    description: "Where to run the test. If none is specified, run from the root directory."
+    required: false
+    default: ""
+  python-version:
+    description: "Python version to use. Default is 3.11."
+    required: false
+    default: "3.11"
 # outputs:
 #   random-number:
 #     description: "Random number"
@@ -17,39 +25,72 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Tree before checkout
+      run: tree -a
+      shell: bash
+
+    - name: Checkout caller repository
+      uses: actions/checkout@v4
+
+    - name: Tree between checkout
+      run: tree -a
+      shell: bash
+
     # if external repository already checked out, it is not necessary to checkout?
-    - uses: actions/checkout@v4
+    - name: Checkout python-mutesting-report repository
+      uses: actions/checkout@v4
       with:
-        ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
+        repository: Century-ss/python-mutation-report
+        path: Century-ss/python-mutesting-report
+        sparse-checkout: |
+          scripts
+          temporary
+        sparse-checkout-cone-mode: false
+        # ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
+
+    - name: Tree after checkout
+      run: tree -a
+      shell: bash
 
     - name: Validate input parameters is not empty
       run: |
-        [[ "${{ inputs.lock_file_path }}" ]] || { echo "Error lock_file_path input is empty" ; exit 1; }
-        [[ "${{ inputs.src_directory }}" ]] || { echo "Error src_directory input is empty" ; exit 1; }
-        [[ "${{ inputs.test_directory }}" ]] || { echo "Error test_directory input is empty" ; exit 1; }
+        [[ "${{ inputs.lock-file-path }}" ]] || { echo "Error lock-file-path input is empty" ; exit 1; }
+        [[ "${{ inputs.src-directory }}" ]] || { echo "Error src-directory input is empty" ; exit 1; }
+        [[ "${{ inputs.test-directory }}" ]] || { echo "Error test-directory input is empty" ; exit 1; }
       shell: bash
 
     - name: Get change file list
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
-      run: gh pr diff "${URL}" --name-only > temporary/PR_diff_files.txt
+      run: |
+        cd Century-ss/python-mutesting-report
+        gh pr diff "${URL}" --name-only > temporary/PR_diff_files.txt
       # Strings with \n cannot be set in $GITHUB_OUTPUT or $GITHUB_ENV, so use a text file instead.
       shell: bash
 
     - name: Debug
-      run: cat temporary/PR_diff_files.txt
+      run: |
+        cd Century-ss/python-mutesting-report
+        cat temporary/PR_diff_files.txt
+      shell: bash
+
+    - name: Make mutmut run command from PR changed files
+      run: python3 Century-ss/python-mutesting-report/scripts/make_command_of_run.py
+      env:
+        SRC_DIRECTORY: ${{ inputs.src-directory }}
+        TEST_DIRECTORY: ${{ inputs.test-directory }}
       shell: bash
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: "${{ inputs.python-version }}"
 
     - name: Generate requirements.txt
-      run: python3 scripts/generate_requirements_from_pipfile.py
+      run: python3 Century-ss/python-mutesting-report/scripts/generate_requirements_from_pipfile.py
       env:
-        LOCK_FILE_PATH: ${{ inputs.lock_file_path }}
+        LOCK_FILE_PATH: ${{ inputs.lock-file-path }}
       shell: bash
 
     - name: Debug requirements.txt
@@ -65,28 +106,35 @@ runs:
       shell: bash
       # pytest may not need to be installed if it is already installed in the lock file
 
-    - name: Make mutmut run command from PR changed files
-      run: python3 scripts/make_command_of_run.py
-      env:
-        SRC_DIRECTORY: ${{ inputs.src_directory }}
-        TEST_DIRECTORY: ${{ inputs.test_directory }}
+    - name: Create __init__.py in test directory
+      run: |
+        cd ${{ inputs.test-directory }}
+        find . -name '__pycache__' -prune -o -type d -exec touch {}/__init__.py \;
+      shell: bash
+
+    - name: cat mutmut-run.sh
+      run: cat Century-ss/python-mutesting-report/temporary/mutmut-run.sh
       shell: bash
 
     - name: Execute mutation test
-      run: bash temporary/mutmut-run.sh
+      run: bash Century-ss/python-mutesting-report/temporary/mutmut-run.sh
       shell: bash
       continue-on-error: true
       # If all mutants cannot be killed, an error occurs with an exit code of 2.
       # Even if an error occurs, continue-on-error is required to allow subsequent steps to be performed
 
+    - name: Debug tree
+      run: tree -a
+      shell: bash
+
     - name: Output mutation test result to a text file.
       run: |
         mutmut html
-        mutmut junitxml --suspicious-policy=error > temporary/junit.xml
+        mutmut junitxml --suspicious-policy=error > Century-ss/python-mutesting-report/temporary/junit.xml
       shell: bash
 
     - name: Reshape result for PR comment
-      run: python3 scripts/reshape_result_for_PR_comment.py
+      run: python3 Century-ss/python-mutesting-report/scripts/reshape_result_for_PR_comment.py
       shell: bash
 
     # - name: Show github context and environment variable
