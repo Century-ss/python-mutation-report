@@ -5,12 +5,7 @@
   example:`mutmut run --paths-to-mutate pipenv-project/src --tests-dir pipenv-project/tests --runner "pytest pipenv-project/tests"`
 
 - Show mutation report with `mutmut show all`
+- Output mutation test results to a html report. `mutmut html`
+- Output mutation test results to a junitxml report. `mutmut junitxml --suspicious-policy=error > temporary/junit.xml`
 
-- Output mutation test results to a text file. `mutmut show all > result.txt`
-
-- Output mutation test results to a html file. `mutmut html`
-
-## TODO
-- reshape output of mutation reort text file
-- change repository name python to pytest
-- support multiple src or test directories
+- Delete .mutmut-cache before run mutation test. `rm .mutmut-cache`
