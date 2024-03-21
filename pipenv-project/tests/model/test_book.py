@@ -1,4 +1,4 @@
-from src.domain.model import Book
+from src.domain.book import Book
 
 
 def test_book() -> None:
