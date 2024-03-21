@@ -3,56 +3,79 @@ import os
 
 src_directory = os.environ.get("SRC_DIRECTORY")
 test_directory = os.environ.get("TEST_DIRECTORY")
-
-with open("temporary/PR_diff_files.txt", "r") as f:
-    changed_files = [s.rstrip() for s in f.readlines()]
-
-changed_py_files = [
-    file for file in changed_files if file.endswith(".py") and not file.endswith("__init__.py")
-]
+where_to_run_test = os.environ.get(
+    "WHERE_TO_RUN_TEST", ""
+)  # TODO: action.ymlのデフォルトで""とかにする"
 
 if src_directory is None:
     raise ValueError("src_directory is not set.")
 if test_directory is None:
     raise ValueError("test_directory is not set.")
 
-changed_src_files = [file for file in changed_py_files if file.startswith(src_directory)]
-changed_test_files = [file for file in changed_py_files if file.startswith(test_directory)]
+with open("Century-ss/python-mutesting-report/temporary/PR_diff_files.txt", "r") as f:
+    changed_files = [s.rstrip() for s in f.readlines()]
 
-changed_src_filenames = [file.split("/")[-1] for file in changed_src_files]
-changed_test_filenames = [file.split("/")[-1] for file in changed_test_files]
+changed_py_files = [
+    file for file in changed_files if file.endswith(".py") and not file.endswith("__init__.py")
+]
 
-all_src_files = glob.glob(f"{src_directory}/**/*.py", recursive=True)
-all_test_files = glob.glob(f"{test_directory}/**/*.py", recursive=True)
+changed_src_file_paths = [file for file in changed_py_files if file.startswith(src_directory)]
+changed_test_file_paths = [file for file in changed_py_files if file.startswith(test_directory)]
 
-# test_files_for_changed_src_filenames = [file for file in changed_src_filenames]
-test_files_correspond_to_changed_src_filenames = []
-for src_filename in changed_src_filenames:
-    test_files_correspond_to_changed_src_filenames.extend(
-        [test_file for test_file in all_test_files if test_file.endswith(f"test_{src_filename}")]
-    )
+changed_src_files = [
+    {"filename": os.path.basename(file_path), "file_path": file_path}
+    for file_path in changed_src_file_paths
+]
+changed_test_files = [
+    {"filename": os.path.basename(file_path), "file_path": file_path}
+    for file_path in changed_test_file_paths
+]
 
-src_files_correspond_to_changed_test_filenames = []
-for test_filename in changed_test_filenames:
-    src_files_correspond_to_changed_test_filenames.extend(
-        [
-            src_file
-            for src_file in all_src_files
-            if src_file.endswith(test_filename.replace("test_", ""))
-        ]
-    )
+all_src_file_paths = glob.glob(f"{src_directory}/**/*.py", recursive=True)
+all_test_file_paths = glob.glob(f"{test_directory}/**/*.py", recursive=True)
 
-files_to_mutate = set(changed_src_files + src_files_correspond_to_changed_test_filenames)
-files_to_run_test = set(changed_test_files + test_files_correspond_to_changed_src_filenames)
+file_paths_to_mutate = []
+file_paths_to_run_test = []
+
+for src_file in changed_src_files:
+    test_file_paths_match_to_src_filename = [
+        test_file_path
+        for test_file_path in all_test_file_paths
+        if test_file_path.endswith(f"test_{src_file['filename']}")
+    ]
+    if len(test_file_paths_match_to_src_filename) > 0:
+        file_paths_to_mutate.append(src_file["file_path"])
+        file_paths_to_run_test.extend(test_file_paths_match_to_src_filename)
+
+for test_file in changed_test_files:
+    src_file_paths_match_to_test_filename = [
+        src_file_path
+        for src_file_path in all_src_file_paths
+        if src_file_path.endswith(test_file["filename"].removeprefix("test_"))
+    ]
+    if len(src_file_paths_match_to_test_filename) > 0:
+        file_paths_to_run_test.append(test_file["file_path"])
+        file_paths_to_mutate.extend(src_file_paths_match_to_test_filename)
+
+if len(file_paths_to_mutate) == 0 or len(file_paths_to_run_test) == 0:
+    raise ValueError("No files to mutate or tests.")
+
+if where_to_run_test != "":
+    file_paths_to_mutate = [
+        file_path.removeprefix(where_to_run_test).removeprefix("/")
+        for file_path in file_paths_to_mutate
+    ]
+    file_paths_to_run_test = [
+        file_path.removeprefix(where_to_run_test).removeprefix("/")
+        for file_path in file_paths_to_run_test
+    ]
 
 command = (
-    f"mutmut run --paths-to-mutate {','.join(files_to_mutate)}"
-    + f" --tests-dir {','.join(files_to_run_test)}"
-    + f" --runner 'python -m pytest -x --assert=plain {' '.join(files_to_run_test)}'"
-    + " > temporary/run.txt"
+    f"mutmut run --paths-to-mutate {','.join(file_paths_to_mutate)}"
+    + f" --tests-dir {','.join(file_paths_to_run_test)}"
+    + f" --runner 'python -m pytest -x --assert=plain {' '.join(file_paths_to_run_test)}'"
+    + " > Century-ss/python-mutesting-report/temporary/run.txt"
 )
 
-with open("temporary/mutmut-run.sh", "w") as f:
+with open("Century-ss/python-mutesting-report/temporary/mutmut-run.sh", "w") as f:
     f.write(command)
-
-print("a")
