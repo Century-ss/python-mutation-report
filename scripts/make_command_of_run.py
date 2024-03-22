@@ -3,7 +3,7 @@ import os
 
 src_directory = os.environ.get("SRC_DIRECTORY")
 test_directory = os.environ.get("TEST_DIRECTORY")
-where_to_run_test = os.environ.get("WHERE_TO_RUN_TEST", "./")
+where_to_run_test = os.environ.get("WHERE_TO_RUN_TEST", ".")
 
 temporary_directory = os.path.join(
     where_to_run_test, "Century-ss/python-mutesting-report/temporary"

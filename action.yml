@@ -13,7 +13,7 @@ inputs:
   where-to-run-test:
     description: "Where to run the test. If none is specified, run from the root directory."
     required: false
-    default: "./"
+    default: "."
   python-version:
     description: "Python version to use. Default is 3.11."
     required: false
