@@ -3,16 +3,18 @@ import os
 
 src_directory = os.environ.get("SRC_DIRECTORY")
 test_directory = os.environ.get("TEST_DIRECTORY")
-where_to_run_test = os.environ.get(
-    "WHERE_TO_RUN_TEST", ""
-)  # TODO: action.ymlのデフォルトで""とかにする"
+where_to_run_test = os.environ.get("WHERE_TO_RUN_TEST", "./")
+
+temporary_directory = os.path.join(
+    where_to_run_test, "Century-ss/python-mutesting-report/temporary"
+)
 
 if src_directory is None:
     raise ValueError("src_directory is not set.")
 if test_directory is None:
     raise ValueError("test_directory is not set.")
 
-with open("Century-ss/python-mutesting-report/temporary/PR_diff_files.txt", "r") as f:
+with open(os.path.join(temporary_directory, "PR_diff_files.txt"), "r") as f:
     changed_files = [s.rstrip() for s in f.readlines()]
 
 changed_py_files = [
@@ -60,7 +62,7 @@ for test_file in changed_test_files:
 if len(file_paths_to_mutate) == 0 or len(file_paths_to_run_test) == 0:
     raise ValueError("No files to mutate or tests.")
 
-if where_to_run_test != "":
+if where_to_run_test != "./" and where_to_run_test != "":
     file_paths_to_mutate = [
         file_path.removeprefix(where_to_run_test).removeprefix("/")
         for file_path in file_paths_to_mutate
@@ -74,8 +76,8 @@ command = (
     f"mutmut run --paths-to-mutate {','.join(file_paths_to_mutate)}"
     + f" --tests-dir {','.join(file_paths_to_run_test)}"
     + f" --runner 'python -m pytest -x --assert=plain {' '.join(file_paths_to_run_test)}'"
-    + " > Century-ss/python-mutesting-report/temporary/run.txt"
+    + f" > {os.path.join(temporary_directory, 'run.txt')}"
 )
 
-with open("Century-ss/python-mutesting-report/temporary/mutmut-run.sh", "w") as f:
+with open(os.path.join(temporary_directory, "mutmut-run.sh"), "w") as f:
     f.write(command)
