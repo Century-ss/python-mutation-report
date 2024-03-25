@@ -1,9 +1,16 @@
+import os
 import re
 import xml.etree.ElementTree as ET
 
 import bs4
 
-with open("Century-ss/python-mutesting-report/temporary/run.txt", "r") as f:
+actions_path = os.environ.get("COMPOSITE_ACTIONS_PATH")
+if actions_path is None:
+    raise ValueError("actions_path of github context is not set.")
+
+temporary_directory = os.path.join(actions_path, "temporary")
+
+with open(os.path.join(temporary_directory, "run.txt"), "r") as f:
     run_result_rows = [s.rstrip() for s in f.readlines()]
 
 """ Make main summary text
@@ -24,7 +31,7 @@ legend_description = (
 
 """ Make sub summary and mutants
 """
-tree = ET.parse("Century-ss/python-mutesting-report/temporary/junit.xml")
+tree = ET.parse(os.path.join(temporary_directory, "junit.xml"))
 root = tree.getroot()
 line_number_dict = {
     testcase.attrib["name"]: testcase.attrib["line"] for testcase in root.iter("testcase")
@@ -37,7 +44,7 @@ for a_tag in soup.find_all("a"):
     a_tag.replace_with(a_tag.get_text())
 sub_summary = str(soup)
 
-with open("Century-ss/python-mutesting-report/temporary/mutmut-run.sh", "r") as f:
+with open(os.path.join(temporary_directory, "mutmut-run.sh"), "r") as f:
     run_command = f.read()
 test_files_matched = re.search(r"--tests-dir\s+([^ ]*)", run_command)
 if test_files_matched is not None:
@@ -67,7 +74,7 @@ for file in file_list:
         if element.startswith("Mutant ") and element[7:].isdigit():
             mutant_id = int(element[7:])
             line_number = line_number_dict[f"Mutant #{mutant_id}"]
-            element = f"### Mutant id:{mutant_id}　Line:{line_number}\n```"
+            element = f"### Line number:{line_number}\n```"
 
         if (
             content_children[index - 1].startswith("Mutant ")
@@ -100,5 +107,5 @@ PR_comment = (
     + "</details>"
 )
 
-with open("PR_comment.txt", "w") as f:
+with open(os.path.join(actions_path, "PR_comment.txt"), "w") as f:
     f.write(PR_comment)
