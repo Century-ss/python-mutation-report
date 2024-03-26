@@ -154,7 +154,7 @@ runs:
     - name: Output mutation test result to a text file.
       run: |
         cd "${{ inputs.where-to-run-test }}"
-        mutmut html
+        mutmut html ; mv html "${{ github.action_path }}/temporary";
         mutmut junitxml --suspicious-policy=error > "${{ github.action_path }}/temporary/junit.xml"
       shell: bash
       # Move html directory to temporary directory?
