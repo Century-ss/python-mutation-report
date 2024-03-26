@@ -32,6 +32,13 @@ runs:
         [[ "${{ inputs.test-directory }}" ]] || { echo "Error test-directory input is empty" ; exit 1; }
       shell: bash
 
+    - name: Validate trigger event is pull_request
+      if: ${{ github.event_name != 'pull_request' }}
+      run: |
+        echo "This workflow is supposed to work on pull request events, but it worked on ${{ github.event_name }}"
+        exit 1
+      shell: bash
+
     - name: Tree before checkout
       run: tree -a
       shell: bash
@@ -156,7 +163,6 @@ runs:
       shell: bash
 
     - name: Post comments to PR
-      # if: ${{ success() && github.event_name == 'pull_request' }}
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
