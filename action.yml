@@ -134,6 +134,9 @@ runs:
     - name: Execute mutation test
       run: |
         cd "${{ inputs.where-to-run-test }}"
+        if [ -e .mutmut-cache ]; then
+          echo "Removing .mutmut-cache" ; rm .mutmut-cache;
+        fi
         bash "${{ github.action_path }}/temporary/mutmut-run.sh"
       shell: bash
       continue-on-error: true
