@@ -5,6 +5,7 @@ src_directory = os.environ.get("SRC_DIRECTORY")
 test_directory = os.environ.get("TEST_DIRECTORY")
 where_to_run_test = os.environ.get("WHERE_TO_RUN_TEST", ".")
 composite_action_path = os.environ.get("COMPOSITE_ACTION_PATH")
+workspace_path = os.environ.get("WORKSPACE_PATH")
 
 if src_directory is None:
     raise ValueError("src_directory is not set.")
@@ -12,6 +13,8 @@ if test_directory is None:
     raise ValueError("test_directory is not set.")
 if composite_action_path is None:
     raise ValueError("actions_path of github context is not set.")
+if workspace_path is None:
+    raise ValueError("workspace of github context is not set.")
 
 src_directory = src_directory.removeprefix("./")
 test_directory = test_directory.removeprefix("./")
@@ -77,15 +80,23 @@ for changed_test_file in changed_test_files:
 if len(file_paths_to_mutate) == 0 or len(file_paths_to_run_test) == 0:
     raise ValueError("Not found files to mutate or tests.")
 
-if where_to_run_test != ".":
-    file_paths_to_mutate = [
-        file_path.removeprefix(where_to_run_test).removeprefix("/")
-        for file_path in file_paths_to_mutate
-    ]
-    file_paths_to_run_test = [
-        file_path.removeprefix(where_to_run_test).removeprefix("/")
-        for file_path in file_paths_to_run_test
-    ]
+# if where_to_run_test != ".":
+#     file_paths_to_mutate = [
+#         file_path.removeprefix(where_to_run_test).removeprefix("/")
+#         for file_path in file_paths_to_mutate
+#     ]
+#     file_paths_to_run_test = [
+#         file_path.removeprefix(where_to_run_test).removeprefix("/")
+#         for file_path in file_paths_to_run_test
+#     ]
+
+# NOTE: Use a path from root for cases where the src is outside the path of the test to be run.
+absolute_file_paths_to_mutate = [
+    os.path.join(workspace_path, path) for path in file_paths_to_mutate
+]
+absolute_file_paths_to_run_test = [
+    os.path.join(workspace_path, path) for path in file_paths_to_run_test
+]
 
 command = (
     f"mutmut run --paths-to-mutate {','.join(file_paths_to_mutate)}"
