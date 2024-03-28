@@ -12,9 +12,9 @@ if src_directory is None:
 if test_directory is None:
     raise ValueError("test_directory is not set.")
 if composite_action_path is None:
-    raise ValueError("actions_path of github context is not set.")
+    raise ValueError("actions_path of github context is not found.")
 if workspace_path is None:
-    raise ValueError("workspace of github context is not set.")
+    raise ValueError("workspace of github context is not found.")
 
 src_directory = src_directory.removeprefix("./")
 test_directory = test_directory.removeprefix("./")

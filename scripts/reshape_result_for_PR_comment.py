@@ -5,8 +5,12 @@ import xml.etree.ElementTree as ET
 import bs4
 
 composite_action_path = os.environ.get("COMPOSITE_ACTION_PATH")
+workspace_path = os.environ.get("WORKSPACE_PATH")
+
 if composite_action_path is None:
-    raise ValueError("actions_path of github context is not set.")
+    raise ValueError("actions_path of github context is not found.")
+if workspace_path is None:
+    raise ValueError("workspace of github context is not found.")
 
 temporary_directory = os.path.join(composite_action_path, "temporary")
 
@@ -40,17 +44,21 @@ sub_summary = str(soup)
 
 with open(os.path.join(temporary_directory, "mutmut-run.sh"), "r") as f:
     run_command = f.read()
-test_files_matched = re.search(r"--tests-dir\s+([^ ]*)", run_command)
-if test_files_matched is not None:
-    test_files = "- " + "\n- ".join(test_files_matched.group(1).split(","))
+matched_tests_dir = re.search(r"--tests-dir\s+([^ ]*)", run_command)
+if matched_tests_dir is not None:
+    matched_absolute_test_paths = matched_tests_dir.group(1).split(",")
+    matched_test_paths = [
+        path.removeprefix(workspace_path).removeprefix("/") for path in matched_absolute_test_paths
+    ]
+    test_paths_to_show = "- " + "\n- ".join(matched_test_paths)
 else:
-    test_files = "Not matched test directory"
+    test_paths_to_show = "Not matched test directory"
 
-show_test_directories = (
+test_paths_of_sub_summary = (
     "<details><summary>"
     + "List of test used for mutation"
     + "</summary>\n\n"
-    + test_files
+    + test_paths_to_show
     + "\n</details>\n\n"
 )
 
@@ -80,7 +88,8 @@ for file in file_list:
             content_children[index - 1].startswith("Mutant ")
             and content_children[index - 1][7:].isdigit()
         ):
-            element = f"{element}\n```"
+            code_block = element.replace(f"{workspace_path}/", "")
+            element = f"{code_block}\n```"
 
         code_blocks += element + "\n"
 
@@ -98,7 +107,7 @@ PR_comment = (
     + "\n\n"
     + sub_summary
     + "\n\n"
-    + show_test_directories
+    + test_paths_of_sub_summary
     + "※ ⏰Timeout, 🤔Suspicious and 🔇Skipped are not shown in the table."
     + "\n<br>\n"
     + "※ 🔇Skipped are not shown in the list of mutants"
