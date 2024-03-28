@@ -46,6 +46,14 @@ runs:
     - name: Checkout caller repository
       uses: actions/checkout@v4
 
+    - name: Validate input parameters are directories or files
+      run: |
+        [ -f "${{ inputs.lock-file-path }}" ] || { echo "Error lock-file-path is not a file" ; exit 1; }
+        [ -d "${{ inputs.src-directory }}" ] || { echo "Error src-directory is not a directory" ; exit 1; }
+        [ -d "${{ inputs.test-directory }}" ] || { echo "Error test-directory is not a directory" ; exit 1; }
+        [ -d "${{ inputs.where-to-run-test }}" ] || { echo "Error where-to-run-test is not a directory" ; exit 1; }
+      shell: bash
+
     # - name: Tree between checkout
     #   run: tree -a
     #   shell: bash
@@ -134,7 +142,7 @@ runs:
     - name: Execute mutation test
       run: |
         cd "${{ inputs.where-to-run-test }}"
-        if [ -e .mutmut-cache ]; then
+        if [ -f .mutmut-cache ]; then
           echo "Removing .mutmut-cache" ; rm .mutmut-cache;
         fi
         bash "${{ github.action_path }}/temporary/mutmut-run.sh"
