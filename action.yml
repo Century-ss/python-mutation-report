@@ -99,7 +99,7 @@ runs:
         SRC_DIRECTORY: ${{ inputs.src-directory }}
         TEST_DIRECTORY: ${{ inputs.test-directory }}
         WHERE_TO_RUN_TEST: ${{ inputs.where-to-run-test }}
-        COMPOSITE_ACTIONS_PATH: ${{ github.action_path }}
+        COMPOSITE_ACTION_PATH: ${{ github.action_path }}
       shell: bash
 
     - name: Set up Python
@@ -173,7 +173,7 @@ runs:
     - name: Reshape result for PR comment
       run: python3 "${{ github.action_path }}/scripts/reshape_result_for_PR_comment.py"
       env:
-        COMPOSITE_ACTIONS_PATH: ${{ github.action_path }}
+        COMPOSITE_ACTION_PATH: ${{ github.action_path }}
       shell: bash
 
     - name: Post comments to PR

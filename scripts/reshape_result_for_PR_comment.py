@@ -4,11 +4,11 @@ import xml.etree.ElementTree as ET
 
 import bs4
 
-actions_path = os.environ.get("COMPOSITE_ACTIONS_PATH")
-if actions_path is None:
+composite_action_path = os.environ.get("COMPOSITE_ACTION_PATH")
+if composite_action_path is None:
     raise ValueError("actions_path of github context is not set.")
 
-temporary_directory = os.path.join(actions_path, "temporary")
+temporary_directory = os.path.join(composite_action_path, "temporary")
 
 with open(os.path.join(temporary_directory, "run.txt"), "r") as f:
     run_result_rows = [s.rstrip() for s in f.readlines()]
@@ -109,5 +109,5 @@ PR_comment = (
     + "</details>"
 )
 
-with open(os.path.join(actions_path, "PR_comment.txt"), "w") as f:
+with open(os.path.join(composite_action_path, "PR_comment.txt"), "w") as f:
     f.write(PR_comment)
