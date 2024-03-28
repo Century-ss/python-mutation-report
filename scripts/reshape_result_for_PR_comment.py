@@ -31,12 +31,6 @@ legend_description = (
 
 """ Make sub summary and mutants
 """
-tree = ET.parse(os.path.join(temporary_directory, "junit.xml"))
-root = tree.getroot()
-line_number_dict = {
-    testcase.attrib["name"]: testcase.attrib["line"] for testcase in root.iter("testcase")
-}  # {"Mutant #3": "3"} Key: mutant id(ex.3), Value: line number
-
 soup = bs4.BeautifulSoup(open(os.path.join(temporary_directory, "html/index.html")), "html.parser")
 file_list = [{"href": a_tag["href"], "file_name": a_tag.get_text()} for a_tag in soup.find_all("a")]
 
@@ -60,11 +54,15 @@ show_test_directories = (
     + "\n</details>\n\n"
 )
 
+tree = ET.parse(os.path.join(temporary_directory, "junit.xml"))
+root = tree.getroot()
+line_number_dict = {
+    testcase.attrib["name"]: testcase.attrib["line"] for testcase in root.iter("testcase")
+}  # {"Mutant #3": "3"} Key: mutant id(ex.3), Value: line number
+
 mutants_per_file = ""
 for file in file_list:
-    content = bs4.BeautifulSoup(
-        open(os.path.join(temporary_directory, f"html/{file['href']}")), "html.parser"
-    )
+    content = bs4.BeautifulSoup(open(file["href"]), "html.parser")
     content_children = list(content.stripped_strings)
     code_blocks = ""
     for index, element in enumerate(content_children):
