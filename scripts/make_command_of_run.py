@@ -13,56 +13,69 @@ if test_directory is None:
 if actions_path is None:
     raise ValueError("actions_path of github context is not set.")
 
+src_directory = src_directory.removeprefix("./")
+test_directory = test_directory.removeprefix("./")
+where_to_run_test = where_to_run_test.removeprefix("./")
+
 temporary_directory = os.path.join(actions_path, "temporary")
 
 
 with open(os.path.join(temporary_directory, "PR_diff_files.txt"), "r") as f:
-    changed_files = [s.rstrip() for s in f.readlines()]
+    changed_file_paths = [s.rstrip() for s in f.readlines()]
 
-changed_py_files = [
-    file for file in changed_files if file.endswith(".py") and not file.endswith("__init__.py")
+changed_py_files_except_init = [
+    {"name": os.path.basename(file_path), "path": file_path}
+    for file_path in changed_file_paths
+    if file_path.endswith(".py") and not file_path.endswith("__init__.py")
 ]
-
-changed_src_file_paths = [file for file in changed_py_files if file.startswith(src_directory)]
-changed_test_file_paths = [file for file in changed_py_files if file.startswith(test_directory)]
 
 changed_src_files = [
-    {"filename": os.path.basename(file_path), "file_path": file_path}
-    for file_path in changed_src_file_paths
+    file
+    for file in changed_py_files_except_init
+    if file["path"].startswith(src_directory) and not file["name"].startswith("test_")
 ]
 changed_test_files = [
-    {"filename": os.path.basename(file_path), "file_path": file_path}
-    for file_path in changed_test_file_paths
+    file
+    for file in changed_py_files_except_init
+    if file["path"].startswith(test_directory) and file["name"].startswith("test_")
 ]
 
-all_src_file_paths = glob.glob(f"{src_directory}/**/*.py", recursive=True)
-all_test_file_paths = glob.glob(f"{test_directory}/**/*.py", recursive=True)
+all_src_files = [
+    {"name": os.path.basename(file_path), "path": file_path}
+    for file_path in glob.glob(os.path.join(src_directory, "**/*.py"), recursive=True)
+    if not os.path.basename(file_path).startswith("test_")
+]
+all_test_files = [
+    {"name": os.path.basename(file_path), "path": file_path}
+    for file_path in glob.glob(os.path.join(test_directory, "**/*.py"), recursive=True)
+    if os.path.basename(file_path).startswith("test_")
+]
 
 file_paths_to_mutate = []
 file_paths_to_run_test = []
 
-for src_file in changed_src_files:
+for changed_src_file in changed_src_files:
     test_file_paths_match_to_src_filename = [
-        test_file_path
-        for test_file_path in all_test_file_paths
-        if test_file_path.endswith(f"test_{src_file['filename']}")
+        all_test_file["path"]
+        for all_test_file in all_test_files
+        if all_test_file["name"] == f"test_{changed_src_file['name']}"
     ]
     if len(test_file_paths_match_to_src_filename) > 0:
-        file_paths_to_mutate.append(src_file["file_path"])
+        file_paths_to_mutate.append(changed_src_file["path"])
         file_paths_to_run_test.extend(test_file_paths_match_to_src_filename)
 
-for test_file in changed_test_files:
+for changed_test_file in changed_test_files:
     src_file_paths_match_to_test_filename = [
-        src_file_path
-        for src_file_path in all_src_file_paths
-        if src_file_path.endswith(test_file["filename"].removeprefix("test_"))
+        all_src_file["path"]
+        for all_src_file in all_src_files
+        if all_src_file["name"] == changed_test_file["name"].removeprefix("test_")
     ]
     if len(src_file_paths_match_to_test_filename) > 0:
-        file_paths_to_run_test.append(test_file["file_path"])
+        file_paths_to_run_test.append(changed_test_file["path"])
         file_paths_to_mutate.extend(src_file_paths_match_to_test_filename)
 
 if len(file_paths_to_mutate) == 0 or len(file_paths_to_run_test) == 0:
-    raise ValueError("No files to mutate or tests.")
+    raise ValueError("Not found files to mutate or tests.")
 
 if where_to_run_test != ".":
     file_paths_to_mutate = [
