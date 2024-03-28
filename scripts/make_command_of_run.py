@@ -4,20 +4,20 @@ import os
 src_directory = os.environ.get("SRC_DIRECTORY")
 test_directory = os.environ.get("TEST_DIRECTORY")
 where_to_run_test = os.environ.get("WHERE_TO_RUN_TEST", ".")
-actions_path = os.environ.get("COMPOSITE_ACTIONS_PATH")
+composite_action_path = os.environ.get("COMPOSITE_ACTION_PATH")
 
 if src_directory is None:
     raise ValueError("src_directory is not set.")
 if test_directory is None:
     raise ValueError("test_directory is not set.")
-if actions_path is None:
+if composite_action_path is None:
     raise ValueError("actions_path of github context is not set.")
 
 src_directory = src_directory.removeprefix("./")
 test_directory = test_directory.removeprefix("./")
 where_to_run_test = where_to_run_test.removeprefix("./")
 
-temporary_directory = os.path.join(actions_path, "temporary")
+temporary_directory = os.path.join(composite_action_path, "temporary")
 
 
 with open(os.path.join(temporary_directory, "PR_diff_files.txt"), "r") as f:
