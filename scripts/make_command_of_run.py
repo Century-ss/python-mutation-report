@@ -99,9 +99,9 @@ absolute_file_paths_to_run_test = [
 ]
 
 command = (
-    f"mutmut run --paths-to-mutate {','.join(file_paths_to_mutate)}"
-    + f" --tests-dir {','.join(file_paths_to_run_test)}"
-    + f" --runner 'python -m pytest -x --assert=plain {' '.join(file_paths_to_run_test)}'"
+    f"mutmut run --paths-to-mutate {','.join(absolute_file_paths_to_mutate)}"
+    + f" --tests-dir {','.join(absolute_file_paths_to_run_test)}"
+    + f" --runner 'python -m pytest -x --assert=plain {' '.join(absolute_file_paths_to_run_test)}'"
     + f" > {temporary_directory}/run.txt"
 )
 
