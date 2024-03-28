@@ -127,13 +127,16 @@ runs:
       shell: bash
       # pytest may not need to be installed if it is already installed in the lock file
 
-    - name: Create __init__.py in test directory
+    - name: Create __init__.py in test directory if src and test are not in the same directory
       run: |
-        cd "${{ inputs.test-directory }}"
-        find . -name '__pycache__' -prune -o -type d -exec touch {}/__init__.py \;
-      shell:
-        bash
-        # find . \( -name '__pycache__' -o -name 'Century-ss' \) -prune -o -type d -exec touch {}/__init__.py \;
+        if [ "${{ inputs.src-directory }}" != "${{ inputs.test-directory }}" ]; then
+          echo "Creating __init__.py in test-directory"
+          cd "${{ inputs.test-directory }}"
+          find . -name '__pycache__' -prune -o -type d -exec touch {}/__init__.py \;
+        fi
+      shell: bash
+      # Create __init__.py because import errors occur when trying to run only some test files.
+      # However, if src and test are in the same directory, the generation of __int__.py causes import errors.
 
     - name: cat mutmut-run.sh
       run: cat "${{ github.action_path }}/temporary/mutmut-run.sh"
