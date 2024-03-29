@@ -8,8 +8,8 @@ mutmut = "*"
 
 [dev-packages]
 pytest = "*"
-requests = "*"
 beautifulsoup4 = "*"
+pip-licenses = "*"
 
 [requires]
 python_version = "3.11"
