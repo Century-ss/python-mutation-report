@@ -156,9 +156,3 @@ runs:
         URL: ${{ github.event.pull_request.html_url }}
       run: gh pr comment -F "${{ github.action_path }}/temporary/PR_comment.txt" "${URL}"
       shell: bash
-
-    - name: Debug of artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: temporary
-        path: ${{ github.action_path }}/temporary
