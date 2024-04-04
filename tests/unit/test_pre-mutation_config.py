@@ -38,12 +38,12 @@ class Test_GenerateMutmutConfig:
             pr_diff_contents_path=self.PR_DIFF_CONTENTS_PATH,
         )
         with open(self.MUTMUT_CONFIG_PATH, "r") as f:
-            content = f.read()
+            actual = f.read()
 
         with open(self._get_expected_mutmut_config_path("created_mutmut_config.py"), "r") as f:
-            expected_content = f.read()
+            expected = f.read()
 
-        assert content == expected_content
+        assert actual == expected
 
     def test_configファイルが存在しpre_mutation関数がない場合pre_mutation関数を追記する(
         self,
@@ -57,12 +57,12 @@ class Test_GenerateMutmutConfig:
             pr_diff_contents_path=self.PR_DIFF_CONTENTS_PATH,
         )
         with open(self.MUTMUT_CONFIG_PATH, "r") as f:
-            content = f.read()
+            actual = f.read()
 
         with open(self._get_expected_mutmut_config_path("added_mutmut_config.py"), "r") as f:
-            expected_content = f.read()
+            expected = f.read()
 
-        assert content == expected_content
+        assert actual == expected
 
     def test_configファイルが存在しpre_mutation関数がある場合は何も追記しない(self) -> None:
         with open(self.MUTMUT_CONFIG_PATH, "w") as f:
@@ -74,9 +74,9 @@ class Test_GenerateMutmutConfig:
             pr_diff_contents_path=self.PR_DIFF_CONTENTS_PATH,
         )
         with open(self.MUTMUT_CONFIG_PATH, "r") as f:
-            content = f.read()
+            actual = f.read()
 
         with open(self._get_expected_mutmut_config_path("do_nothing_mutmut_config.py"), "r") as f:
-            expected_content = f.read()
+            expected = f.read()
 
-        assert content == expected_content
+        assert actual == expected

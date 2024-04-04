@@ -23,8 +23,8 @@ class Test_GenerateRequirements:
         input_lock_file_path = self._get_input_lock_file_path("Pipfile.lock")
         main(lock_file_path=input_lock_file_path)
         with open(self.OUTPUT_FILE_PATH, "r") as f:
-            content = f.read()
-        assert content == ("beautifulsoup4==4.11.2\n" + "click==8.1.7\n" + "prettytable==3.10.0\n")
+            actual = f.read()
+        assert actual == ("beautifulsoup4==4.11.2\n" + "click==8.1.7\n" + "prettytable==3.10.0\n")
 
     def test_pipのlockファイルは同じ内容のファイルを生成する(
         self,
@@ -32,8 +32,8 @@ class Test_GenerateRequirements:
         input_lock_file_path = self._get_input_lock_file_path("requirements.txt")
         main(input_lock_file_path)
         with open(self.OUTPUT_FILE_PATH, "r") as f:
-            content = f.read()
-        assert content == ("beautifulsoup4==4.12.3\n" + "requests==2.31.0\n")
+            actual = f.read()
+        assert actual == ("beautifulsoup4==4.12.3\n" + "requests==2.31.0\n")
 
     def test_システム用のryeのlockファイルからmoduleのバージョンだけを抽出してrequirementsを生成する(
         self,
@@ -41,8 +41,8 @@ class Test_GenerateRequirements:
         input_lock_file_path = self._get_input_lock_file_path("requirements.lock")
         main(input_lock_file_path)
         with open(self.OUTPUT_FILE_PATH, "r") as f:
-            content = f.read()
-        assert content == ("beautifulsoup4==4.10.0\n" + "soupsieve==2.2\n")
+            actual = f.read()
+        assert actual == ("beautifulsoup4==4.10.0\n" + "soupsieve==2.2\n")
 
     def test_開発用のryeのlockファイルからmoduleのバージョンだけを抽出してrequirementsを生成する(
         self,
@@ -50,8 +50,8 @@ class Test_GenerateRequirements:
         input_lock_file_path = self._get_input_lock_file_path("requirements-dev.lock")
         main(input_lock_file_path)
         with open(self.OUTPUT_FILE_PATH, "r") as f:
-            content = f.read()
-        assert content == (
+            actual = f.read()
+        assert actual == (
             "beautifulsoup4==4.12.3\n"
             + "packaging==24.0\n"
             + "pytest==8.1.1\n"

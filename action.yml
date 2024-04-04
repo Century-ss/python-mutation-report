@@ -67,7 +67,6 @@ runs:
       env:
         SRC_DIRECTORY: ${{ inputs.src-directory }}
         TEST_DIRECTORY: ${{ inputs.test-directory }}
-        WHERE_TO_RUN_TEST: ${{ inputs.where-to-run-test }}
         COMPOSITE_ACTION_PATH: ${{ github.action_path }}
         WORKSPACE_PATH: ${{ github.workspace }}
       shell: bash
