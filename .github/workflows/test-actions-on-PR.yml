@@ -2,6 +2,10 @@ name: 🧪 Test this repository actions on PR
 
 on: [pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
 jobs:
   hello_world_job:
     runs-on: ubuntu-latest
@@ -18,3 +22,9 @@ jobs:
           lock-file-path: "pipenv-project/Pipfile.lock"
           src-directory: "pipenv-project/src"
           test-directory: "pipenv-project/tests"
+
+      - name: Debug of artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: temporary
+          path: temporary
