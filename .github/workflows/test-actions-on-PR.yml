@@ -27,4 +27,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: temporary
-          path: temporary
+          path: |
+            temporary
+            pipenv-project

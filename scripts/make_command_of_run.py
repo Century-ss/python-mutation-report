@@ -36,6 +36,8 @@ def main(src_directory, test_directory, workspace_path, temporary_directory) -> 
         if len(test_file_paths_match_to_src_filename) > 0:
             file_paths_to_mutate.append(changed_src_file["relative_path"])
             file_paths_to_run_test.extend(test_file_paths_match_to_src_filename)
+        else:
+            print(f"Test file not found for {changed_src_file['name']}.")
 
     if len(file_paths_to_mutate) == 0 or len(file_paths_to_run_test) == 0:
         raise ValueError("Not found files to mutate or tests.")
@@ -65,7 +67,6 @@ def main(src_directory, test_directory, workspace_path, temporary_directory) -> 
 if __name__ == "__main__":
     SRC_DIRECTORY = os.environ.get("SRC_DIRECTORY")
     TEST_DIRECTORY = os.environ.get("TEST_DIRECTORY")
-    WHERE_TO_RUN_TEST = os.environ.get("WHERE_TO_RUN_TEST", ".")
     COMPOSITE_ACTION_PATH = os.environ.get("COMPOSITE_ACTION_PATH")
     WORKSPACE_PATH = os.environ.get("WORKSPACE_PATH")
 
@@ -73,8 +74,6 @@ if __name__ == "__main__":
         raise ValueError("src_directory is not set.")
     if TEST_DIRECTORY is None:
         raise ValueError("test_directory is not set.")
-    if WHERE_TO_RUN_TEST is None:
-        raise ValueError("where-to-run-test is not set. It should be '.' by default.")
     if COMPOSITE_ACTION_PATH is None:
         raise ValueError("actions_path of github context is not found.")
     if WORKSPACE_PATH is None:
@@ -82,7 +81,6 @@ if __name__ == "__main__":
 
     SRC_DIRECTORY = SRC_DIRECTORY.removeprefix("./").removesuffix("/")
     TEST_DIRECTORY = TEST_DIRECTORY.removeprefix("./").removesuffix("/")
-    WHERE_TO_RUN_TEST = WHERE_TO_RUN_TEST.removeprefix("./").removesuffix("/")
 
     TEMPORARY_DIRECTORY = os.path.join(COMPOSITE_ACTION_PATH, "temporary")
 

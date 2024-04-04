@@ -67,7 +67,6 @@ runs:
       env:
         SRC_DIRECTORY: ${{ inputs.src-directory }}
         TEST_DIRECTORY: ${{ inputs.test-directory }}
-        WHERE_TO_RUN_TEST: ${{ inputs.where-to-run-test }}
         COMPOSITE_ACTION_PATH: ${{ github.action_path }}
         WORKSPACE_PATH: ${{ github.workspace }}
       shell: bash
@@ -157,3 +156,9 @@ runs:
         URL: ${{ github.event.pull_request.html_url }}
       run: gh pr comment -F "${{ github.action_path }}/PR_comment.txt" "${URL}"
       shell: bash
+
+    - name: Debug of artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: temporary
+        path: ${{ github.action_path }}/temporary
