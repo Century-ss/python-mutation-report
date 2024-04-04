@@ -23,8 +23,9 @@ jobs:
           src-directory: "pipenv-project/src"
           test-directory: "pipenv-project/tests"
 
-      - name: Debug of artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: temporary
-          path: temporary
+          name: temporary-pipenv-project
+          path: |
+            temporary
+            pipenv-project
