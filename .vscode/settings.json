@@ -10,5 +10,9 @@
       "source.organizeImports.ruff": "explicit"
     }
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+
+  "python.defaultInterpreterPath": ".venv/bin/python",
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["--ignore=pipenv-project"]
 }

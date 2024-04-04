@@ -37,11 +37,7 @@ def get_package_versions_from_pip(lock_file_path: str) -> str:
     return file_contents
 
 
-if __name__ == "__main__":
-    lock_file_path = os.environ.get("LOCK_FILE_PATH")
-    if lock_file_path is None:
-        raise ValueError("LOCK_FILE_PATH is not set.")
-
+def main(lock_file_path) -> None:
     filename = os.path.basename(lock_file_path)
 
     if filename == "Pipfile.lock":
@@ -55,3 +51,11 @@ if __name__ == "__main__":
 
     with open("requirements.txt", "w") as f:
         f.write(package_versions)
+
+
+if __name__ == "__main__":
+    LOCK_FILE_PATH = os.environ.get("LOCK_FILE_PATH")
+    if LOCK_FILE_PATH is None:
+        raise ValueError("LOCK_FILE_PATH is not set.")
+
+    main(lock_file_path=LOCK_FILE_PATH)

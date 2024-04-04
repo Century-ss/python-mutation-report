@@ -5,11 +5,12 @@ name = "pypi"
 
 [packages]
 mutmut = "*"
-
-[dev-packages]
 pytest = "*"
 beautifulsoup4 = "*"
+
+[dev-packages]
 pip-licenses = "*"
+pipdeptree = "*"
 
 [requires]
 python_version = "3.11"
