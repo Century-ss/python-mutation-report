@@ -9,7 +9,4 @@ temporary/*
 
 .development/
 
-html/
-PR_comment.txt
-
 .pre-commit-config.yaml
