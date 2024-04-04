@@ -7,5 +7,3 @@
 - Show mutation report with `mutmut show all`
 - Output mutation test results to a html report. `mutmut html`
 - Output mutation test results to a junitxml report. `mutmut junitxml --suspicious-policy=error > temporary/junit.xml`
-
-- Delete .mutmut-cache before run mutation test. `rm .mutmut-cache`
