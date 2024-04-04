@@ -1,7 +1,8 @@
 # python-mutation-report
-This python-mutation-report performs a mutation test with `mutmut` of the pip package on the file changed in the pull request,  
+This python-mutation-report performs a mutation test with `mutmut` of the pip package on the changed lines of file in the pull request,  
 and comments the mutation test summary in the pull_request, as shown in the [example](docs/sample_summary_comment.md) below.
 
+# TODO change image
 <img src="docs/sample_summary_comment.png" width="700">
 
 ## Example usage in workflow
