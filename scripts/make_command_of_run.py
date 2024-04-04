@@ -36,6 +36,8 @@ def main(src_directory, test_directory, workspace_path, temporary_directory) -> 
         if len(test_file_paths_match_to_src_filename) > 0:
             file_paths_to_mutate.append(changed_src_file["relative_path"])
             file_paths_to_run_test.extend(test_file_paths_match_to_src_filename)
+        else:
+            print(f"Test file not found for {changed_src_file['name']}.")
 
     if len(file_paths_to_mutate) == 0 or len(file_paths_to_run_test) == 0:
         raise ValueError("Not found files to mutate or tests.")

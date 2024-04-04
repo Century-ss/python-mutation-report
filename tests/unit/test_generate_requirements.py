@@ -5,7 +5,7 @@ import pytest
 from scripts.generate_requirements import main
 
 
-class TestGenerateRequirements:
+class Test_GenerateRequirements:
     OUTPUT_FILE_PATH = "requirements.txt"
 
     def setup_method(self) -> None:
