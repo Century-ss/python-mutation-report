@@ -39,10 +39,6 @@ runs:
         exit 1
       shell: bash
 
-    - name: Tree before checkout
-      run: tree -a
-      shell: bash
-
     - name: Checkout caller repository
       uses: actions/checkout@v4
 
@@ -54,42 +50,19 @@ runs:
         [ -d "${{ inputs.where-to-run-test }}" ] || { echo "Error where-to-run-test is not a directory" ; exit 1; }
       shell: bash
 
-    # - name: Tree between checkout
-    #   run: tree -a
-    #   shell: bash
-
-    # # if external repository already checked out, it is not necessary to checkout?
-    # - name: Checkout python-mutesting-report repository
-    #   uses: actions/checkout@v4
-    #   with:
-    #     repository: Century-ss/python-mutation-report
-    #     path: "${{ inputs.where-to-run-test }}/Century-ss/python-mutesting-report"
-    #     sparse-checkout: |
-    #       scripts
-    #       temporary
-    #     sparse-checkout-cone-mode: false
-    #     # ref: ${{ github.head_ref }} # TODO: If except pull_request, use ${{ github.ref or ref_name }}
-
-    # - name: Tree after checkout
-    #   run: |
-    #     cd ~/work
-    #     tree -a
-    #   shell: bash
-
-    - name: Get change file list
+    - name: Output changed filenames to txt
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
-      run: |
-        cd "${{ github.action_path }}"
-        gh pr diff "${URL}" --name-only > temporary/PR_diff_files.txt
+      run: gh pr diff "${URL}" --name-only > "${{ github.action_path }}/temporary/PR_diff_filenames.txt"
       # Strings with \n cannot be set in $GITHUB_OUTPUT or $GITHUB_ENV, so use a text file instead.
       shell: bash
 
-    - name: Debug
-      run: |
-        cd "${{ github.action_path }}"
-        cat temporary/PR_diff_files.txt
+    - name: Output diff contents to txt
+      env:
+        GH_TOKEN: ${{ github.token }}
+        URL: ${{ github.event.pull_request.html_url }}
+      run: gh pr diff "${URL}" > "${{ github.action_path }}/temporary/PR_diff_contents.txt"
       shell: bash
 
     - name: Make mutmut run command from PR changed files
@@ -110,13 +83,9 @@ runs:
 
     - name: Generate requirements.txt
       # Uses the path of the lock file from root, so must be run from root.
-      run: python3 "${{ github.action_path }}/scripts/generate_requirements_from_pipfile.py"
+      run: python3 "${{ github.action_path }}/scripts/generate_requirements.py"
       env:
         LOCK_FILE_PATH: ${{ inputs.lock-file-path }}
-      shell: bash
-
-    - name: Debug requirements.txt
-      run: cat requirements.txt
       shell: bash
 
     - name: Install dependencies
@@ -124,23 +93,39 @@ runs:
         pip3 install --no-cache-dir -r requirements.txt
         pip3 install mutmut==2.4.4
         pip3 install beautifulsoup4==4.12.3
-        pip3 install pytest
+
+        if grep -q 'pytest' requirements.txt
+        then
+            echo "pytest is listed in requirements.txt and already installed."
+        else
+            echo "pytest is not listed in requirements.txt. So installing pytest==8.1.1."
+            pip3 install pytest==8.1.1
+        fi
       shell: bash
       # pytest may not need to be installed if it is already installed in the lock file
 
-    - name: Create __init__.py in test directory if src and test are not in the same directory
+    - name: Create __init__.py in test directory if src and test are not same directory
       run: |
-        if [ "${{ inputs.src-directory }}" != "${{ inputs.test-directory }}" ]; then
-          echo "Creating __init__.py in test-directory"
+        src_absolute_path=$(readlink -f "${{ inputs.src-directory }}")
+        test_absolute_path=$(readlink -f "${{ inputs.test-directory }}")
+
+        if [ "$src_absolute_path" != "$test_absolute_path" ]; then
+          echo "The src and test paths point to different locations. So, creating __init__.py in test-directory."
           cd "${{ inputs.test-directory }}"
           find . -name '__pycache__' -prune -o -type d -exec touch {}/__init__.py \;
+        else
+          echo "The src and test paths point to the same location. So, skipping the creation of __init__.py."
         fi
       shell: bash
       # Create __init__.py because import errors occur when trying to run only some test files.
       # However, if src and test are in the same directory, the generation of __int__.py causes import errors.
 
-    - name: cat mutmut-run.sh
-      run: cat "${{ github.action_path }}/temporary/mutmut-run.sh"
+    - name: Generate pre mutation mutmut config to plant mutants in the changed line only
+      env:
+        WHERE_TO_RUN_TEST: ${{ inputs.where-to-run-test }}
+        COMPOSITE_ACTION_PATH: ${{ github.action_path }}
+        WORKSPACE_PATH: ${{ github.workspace }}
+      run: python3 "${{ github.action_path }}/scripts/generate_pre_mutation_config.py"
       shell: bash
 
     - name: Execute mutation test
@@ -154,14 +139,6 @@ runs:
       continue-on-error: true
       # If all mutants cannot be killed, an error occurs with an exit code of 2.
       # Even if an error occurs, continue-on-error is required to allow subsequent steps to be performed
-
-    - name: Debug run.txt
-      run: cat "${{ github.action_path }}/temporary/run.txt"
-      shell: bash
-
-    - name: Debug tree
-      run: tree -a
-      shell: bash
 
     - name: Output mutation test result to a text file.
       run: |
@@ -184,16 +161,3 @@ runs:
         URL: ${{ github.event.pull_request.html_url }}
       run: gh pr comment -F "${{ github.action_path }}/PR_comment.txt" "${URL}"
       shell: bash
-
-    # - name: Upload artifact text file?
-    #   if: ${{ success() && github.event_name != 'pull_request' }}
-    #   env:
-    #     GITHUB_TOKEN: ${{ github.token }}
-    #     URL: ${{ github.event.pull_request.html_url }}
-    #   run: gh pr comment -F result.txt "${URL}"
-
-    # - name: Show github context and environment variable
-    #   run: |
-    #     echo '${{ toJSON(github) }}'
-    #     printenv
-    #   shell: bash

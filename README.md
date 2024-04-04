@@ -33,6 +33,7 @@ jobs:
 
 ## Notes
 - Only `pull_request` events are supported.
+- Perform mutation test only on `pull_request` changed lines in files under `src-directory`.
 - Only `ubuntu` and `mac os` runners are supported.
 - Only `pytest` is supported as a test module.
 - `Write permission for pull_request` and `read permission for contents` is required.
@@ -43,7 +44,6 @@ jobs:
   - If `test_hoge.py` is found, include `hoge.py` and `test_hoge.py` in the mutation test.
   - If `test_hoge.py` is not found, not include `hoge.py` in the mutation test.
   - If multiple `test_hoge.py` is found, include them all in the mutation test.
-- The same applies if `test_hoge.py` is in the change diff, try to find `hoge.py` in the src directory and only include it in the mutation test if it is found.
 
 ## Inputs
 - Required parameters
