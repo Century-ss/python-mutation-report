@@ -12,7 +12,7 @@ on:
       - "python-project/src/**"
       - "python-project/tests/**"
 
-jobs:
+jobs:#
   python-mutation-testing-report:
     runs-on: ubuntu-latest
     name: Python mutation testing report
@@ -54,8 +54,7 @@ jobs:
   - `src-directory`: Directory path of the source to plant the mutant.
   - `test-directory`: Directory path of the test to evaluate the mutant.
 - Optional parameters.
-  - `where-to-run-test`: Path to the location where　test is run. Default is `"."`, it runs in the repository root directory.
   - `python-version`: Version of python used. Default is `"3.11"`
 
 ## Outputs
-No outputs.
+No outputs.#

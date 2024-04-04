@@ -1,6 +1,6 @@
 class Product:
-    def __init__(self, name: str, price: int) -> None:
-        self.name = name
+    def __init__(self, name: str, price: int) -> None:  #
+        self.name = name  #
         self.price = price
 
 
@@ -13,4 +13,4 @@ class Shop:
         self.products.append(product)
 
     def list_products(self) -> list[Product]:
-        return self.products
+        return self.products  #
