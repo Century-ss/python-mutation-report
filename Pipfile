@@ -11,6 +11,7 @@ beautifulsoup4 = "*"
 [dev-packages]
 pip-licenses = "*"
 pipdeptree = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.11"
