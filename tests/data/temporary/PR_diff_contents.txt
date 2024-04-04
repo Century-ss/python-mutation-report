@@ -1,0 +1,339 @@
+diff --git a/.github/CONTRIBUTING.md b/.github/CONTRIBUTING_mv.md
+similarity index 88%
+rename from .github/CONTRIBUTING.md
+rename to .github/CONTRIBUTING_mv.md
+index ec1ddfb..69c301d 100644
+--- a/.github/CONTRIBUTING.md
++++ b/.github/CONTRIBUTING_mv.md
+@@ -7,5 +7,3 @@
+ - Show mutation report with `mutmut show all`
+ - Output mutation test results to a html report. `mutmut html`
+ - Output mutation test results to a junitxml report. `mutmut junitxml --suspicious-policy=error > temporary/junit.xml`
+-
+-- Delete .mutmut-cache before run mutation test. `rm .mutmut-cache`
+diff --git a/.github/workflows/test-actions-on-PR.yml b/.github/workflows/test-actions-on-PR.yml
+index e0a3f92..3c7eb43 100644
+--- a/.github/workflows/test-actions-on-PR.yml
++++ b/.github/workflows/test-actions-on-PR.yml
+@@ -2,21 +2,29 @@ name: 🧪 Test this repository actions on PR
+ 
+ on: [pull_request]
+ 
++concurrency:
++  group: ${{ github.workflow }}-${{ github.head_ref }}
++  cancel-in-progress: true
++
+ jobs:
+   hello_world_job:
+     runs-on: ubuntu-latest
+-    name: Test mutation report action
++    name: Test mutation report actionsaa
+     permissions:
+       pull-requests: write
+ 
+     steps:
+       - uses: actions/checkout@v4
+-        with:
+-          ref: ${{ github.head_ref }}
+ 
+       - id: foo
+         uses: ./
+         with:
+-          lock_file_path: "pipenv-project/Pipfile.lock"
+-          src_directory: "pipenv-project/src"
+-          test_directory: "pipenv-project/tests"
++          lock-file-path: "pipenv-project/Pipfile.lock"
++          src-directory: "pipenv-project/src"
++          test-directory: "pipenv-project/tests"
++
++      - name: Debug of artifact
++        uses: actions/upload-artifact@v4
++        with:
++          name: temporary
++          path: temporary
+diff --git a/README.md b/README.md
+index d3200cf..598330a 100644
+--- a/README.md
++++ b/README.md
+@@ -1,7 +1,8 @@
+ # python-mutation-report
+-This python-mutation-report performs a mutation test with `mutmut` of the pip package on the file changed in the pull request,  
++This python-mutation-report performs a mutation test with `mutmut` of the pip package on the changed lines of file in the pull request,  
+ and comments the mutation test summary in the pull_request, as shown in the [example](docs/sample_summary_comment.md) below.
+ 
++# TODO change image
+ <img src="docs/sample_summary_comment.png" width="700">
+ 
+ ## Example usage in workflow
+@@ -12,7 +13,7 @@ on:
+       - "python-project/src/**"
+       - "python-project/tests/**"
+ 
+-jobs:
++jobs:#
+   python-mutation-testing-report:
+     runs-on: ubuntu-latest
+     name: Python mutation testing report
+@@ -54,8 +55,7 @@ jobs:
+   - `src-directory`: Directory path of the source to plant the mutant.
+   - `test-directory`: Directory path of the test to evaluate the mutant.
+ - Optional parameters.
+-  - `where-to-run-test`: Path to the location where　test is run. Default is `"."`, it runs in the repository root directory.
+   - `python-version`: Version of python used. Default is `"3.11"`
+ 
+ ## Outputs
+-No outputs.
++No outputs.#
+diff --git a/action.yml b/action.yml
+index 41f701e..300ee21 100644
+--- a/action.yml
++++ b/action.yml
+@@ -18,10 +18,6 @@ inputs:
+     description: "Python version to use. Default is 3.11."
+     required: false
+     default: "3.11"
+-# outputs:
+-#   random-number:
+-#     description: "Random number"
+-#     value: ${{ steps.random-number-generator.outputs.random-number }}
+ runs:
+   using: "composite"
+   steps:
+diff --git a/docs/sample_summary_comment.md b/docs/sample_summary_comment.md
+deleted file mode 100644
+index 0b316f8..0000000
+--- a/docs/sample_summary_comment.md
++++ /dev/null
+@@ -1,129 +0,0 @@
+-<details><summary>Mutation Test Result　　🎉 11　　⏰ 0　　🤔 0　　🙁 7　　🔇 0</summary>
+-
+-<br>
+-
+-Legend for output:
+-🎉 Killed mutants.   The goal is for everything to end up in this bucket.
+-⏰ Timeout.          Test suite took 10 times as long as the baseline so were killed.
+-🤔 Suspicious.       Tests took a long time, but not long enough to be fatal.
+-🙁 Survived.         This means your tests need to be expanded.
+-🔇 Skipped.          Skipped.
+-
+-
+-<h1>Mutation testing report</h1>Killed 11 out of 18 mutants<table><thead><tr><th>File</th><th>Total</th><th>Killed</th><th>% killed</th><th>Survived</th></tr></thead><tr><td>backend/pipenv-project/src/domain/book.py</td><td>3</td><td>0</td><td>0.00</td><td>3</td><tr><td>backend/pipenv-project/src/fizz_buzz.py</td><td>15</td><td>11</td><td>73.33</td><td>4</td></tr></tr></table>
+-
+-<details><summary>List of test used for mutation</summary>
+-
+-- backend/pipenv-project/tests/model/test_book.py
+-- backend/pipenv-project/tests/test_fizz_buzz.py
+-</details>
+-
+-※ ⏰Timeout, 🤔Suspicious and 🔇Skipped are not shown in the table.
+-<br>
+-※ 🔇Skipped are not shown in the list of mutants
+-
+-<details><summary>backend/pipenv-project/src/domain/book.py</summary>
+-
+-Killed 0 out of 3 mutants
+-## Survived
+-Survived mutation testing. These mutants show holes in your test suite.
+-### Line number:3
+-```
+---- backend/pipenv-project/src/domain/book.py
+-+++ backend/pipenv-project/src/domain/book.py
+-@@ -1,6 +1,6 @@
+- class Book:
+-     def __init__(self, title: str, author: str) -> None:
+--        self.title = title
+-+        self.title = None
+-         self.author = author
+- 
+-     def get_info(self) -> str:
+-```
+-### Line number:4
+-```
+---- backend/pipenv-project/src/domain/book.py
+-+++ backend/pipenv-project/src/domain/book.py
+-@@ -1,7 +1,7 @@
+- class Book:
+-     def __init__(self, title: str, author: str) -> None:
+-         self.title = title
+--        self.author = author
+-+        self.author = None
+- 
+-     def get_info(self) -> str:
+-         return f"{self.title} by {self.author}"
+-```
+-### Line number:7
+-```
+---- backend/pipenv-project/src/domain/book.py
+-+++ backend/pipenv-project/src/domain/book.py
+-@@ -4,7 +4,7 @@
+-         self.author = author
+- 
+-     def get_info(self) -> str:
+--        return f"{self.title} by {self.author}"
+-+        return f"XX{self.title} by {self.author}XX"
+- 
+- 
+- ###
+-```
+-</details>
+-
+-<details><summary>backend/pipenv-project/src/fizz_buzz.py</summary>
+-
+-Killed 11 out of 15 mutants
+-## Survived
+-Survived mutation testing. These mutants show holes in your test suite.
+-### Line number:2
+-```
+---- backend/pipenv-project/src/fizz_buzz.py
+-+++ backend/pipenv-project/src/fizz_buzz.py
+-@@ -1,5 +1,5 @@
+- def fizz_buzz(n):
+--    if n % 15 == 0:
+-+    if n / 15 == 0:
+-         return "fizz buzz"
+- 
+-     if n % 3 == 0:
+-```
+-### Line number:2
+-```
+---- backend/pipenv-project/src/fizz_buzz.py
+-+++ backend/pipenv-project/src/fizz_buzz.py
+-@@ -1,5 +1,5 @@
+- def fizz_buzz(n):
+--    if n % 15 == 0:
+-+    if n % 16 == 0:
+-         return "fizz buzz"
+- 
+-     if n % 3 == 0:
+-```
+-### Line number:2
+-```
+---- backend/pipenv-project/src/fizz_buzz.py
+-+++ backend/pipenv-project/src/fizz_buzz.py
+-@@ -1,5 +1,5 @@
+- def fizz_buzz(n):
+--    if n % 15 == 0:
+-+    if n % 15 == 1:
+-         return "fizz buzz"
+- 
+-     if n % 3 == 0:
+-```
+-### Line number:3
+-```
+---- backend/pipenv-project/src/fizz_buzz.py
+-+++ backend/pipenv-project/src/fizz_buzz.py
+-@@ -1,6 +1,6 @@
+- def fizz_buzz(n):
+-     if n % 15 == 0:
+--        return "fizz buzz"
+-+        return "XXfizz buzzXX"
+- 
+-     if n % 3 == 0:
+-         return "fizz"
+-```
+-</details>
+-
+-</details>
+diff --git a/docs/sample_summary_comment_mv.md b/docs/sample_summary_comment_mv.md
+new file mode 100644
+index 0000000..e69de29
+diff --git a/pipenv-project/src/calculator.py b/pipenv-project/src/calculator.py
+index daece3e..f6ee0ae 100644
+--- a/pipenv-project/src/calculator.py
++++ b/pipenv-project/src/calculator.py
+@@ -1,12 +1,12 @@
+ class Calculator:
+     @staticmethod
+     def add(a: int, b: int) -> int:
+-        return a - b
++        return a - b  #
+ 
+     @staticmethod
+     def subtract(a: int, b: int) -> int:
+-        return a - b
++        return a - b  #
+ 
+     @staticmethod
+     def multiple(a: int, b: int) -> int:
+-        return a * b
++        return a * b  #
+diff --git a/pipenv-project/src/domain/book.py b/pipenv-project/src/domain/book.py
+index ba3e1e5..a8dcd7c 100644
+--- a/pipenv-project/src/domain/book.py
++++ b/pipenv-project/src/domain/book.py
+@@ -1,7 +1,7 @@
+ class Book:
+     def __init__(self, title: str, author: str) -> None:
+         self.title = title
+-        self.author = author
++        self.author = author  #
+ 
+     def get_info(self) -> str:
+-        return f"{self.title} by {self.author}"
++        return f"{self.title} by {self.author}"  #
+diff --git a/pipenv-project/src/fizz_buzz.py b/pipenv-project/src/fizz_buzz.py
+index 514bc97..0e3cbc8 100644
+--- a/pipenv-project/src/fizz_buzz.py
++++ b/pipenv-project/src/fizz_buzz.py
+@@ -1,9 +1,9 @@
+ def fizz_buzz(n):
+-    if n % 15 == 0:
+-        return "fizz buzz"
++    if n % 15 == 0:  #
++        return "fizz buzz"  #
+ 
+     if n % 3 == 0:
+         return "fizz"
+ 
+-    if n % 5 == 0:
+-        return "buzz"
++    if n % 5 == 0:  #
++        return "buzz"  #
+diff --git a/pipenv-project/src/shop.py b/pipenv-project/src/shop.py
+index 91865c8..d54ca2b 100644
+--- a/pipenv-project/src/shop.py
++++ b/pipenv-project/src/shop.py
+@@ -1,6 +1,6 @@
+ class Product:
+-    def __init__(self, name: str, price: int) -> None:
+-        self.name = name
++    def __init__(self, name: str, price: int) -> None:  #
++        self.name = name  #
+         self.price = price
+ 
+ 
+@@ -13,4 +13,4 @@ def add_product(self, product: Product) -> None:
+         self.products.append(product)
+ 
+     def list_products(self) -> list[Product]:
+-        return self.products
++        return self.products  #
+diff --git a/pipenv-project/tests/model/test_book.py b/pipenv-project/tests/model/test_book.py
+index a0cf252..cb7f4d5 100644
+--- a/pipenv-project/tests/model/test_book.py
++++ b/pipenv-project/tests/model/test_book.py
+@@ -4,5 +4,4 @@
+ def test_book() -> None:
+     book = Book("The Catcher in the Rye", "J.D. Salinger")
+     print(book.get_info())
+-    # assert book.get_info() == "The Catcher in the Rye by J.D. Salinger"
+-    assert True
++    assert book.get_info() == "The Catcher in the Rye by J.D. Salinger"
+diff --git a/pipenv-project/tests/test_drink.py b/pipenv-project/tests/test_drinv_mv_only.py
+similarity index 100%
+rename from pipenv-project/tests/test_drink.py
+rename to pipenv-project/tests/test_drinv_mv_only.py
+diff --git a/pipenv-project/tests/test_fizz_buzz.py b/pipenv-project/tests/test_fizz_buzz.py
+index a09a1c1..4c7a721 100644
+--- a/pipenv-project/tests/test_fizz_buzz.py
++++ b/pipenv-project/tests/test_fizz_buzz.py
+@@ -3,7 +3,8 @@
+ 
+ 
+ def test_fizz() -> None:
+-    assert fizz_buzz(3) == "fizz"
++    # assert fizz_buzz(3) == "fizz"
++    assert True
+ 
+ 
+ def test_buzz() -> None:

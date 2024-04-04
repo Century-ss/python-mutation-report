@@ -1,0 +1,131 @@
+<?xml version="1.0" ?>
+<testsuites disabled="0" errors="0" failures="5" tests="24" time="0.0">
+	<testsuite disabled="0" errors="0" failures="5" name="mutmut" skipped="0" tests="24" time="0">
+		<testcase name="Mutant #1" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py" line="2">
+			<system-out>    @staticmethod</system-out>
+		</testcase>
+		<testcase name="Mutant #2" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py" line="4">
+			<failure type="failure" message="bad_survived">--- /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py
++++ /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py
+@@ -1,7 +1,7 @@
+ class Calculator:
+     @staticmethod
+     def add(a: int, b: int) -&gt; int:
+-        return a - b  #
++        return a + b  #
+ 
+     @staticmethod
+     def subtract(a: int, b: int) -&gt; int:
+</failure>
+			<system-out>        return a - b  #</system-out>
+		</testcase>
+		<testcase name="Mutant #3" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py" line="6">
+			<system-out>    @staticmethod</system-out>
+		</testcase>
+		<testcase name="Mutant #4" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py" line="8">
+			<system-out>        return a - b  #</system-out>
+		</testcase>
+		<testcase name="Mutant #5" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py" line="10">
+			<system-out>    @staticmethod</system-out>
+		</testcase>
+		<testcase name="Mutant #6" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py" line="12">
+			<system-out>        return a * b  #</system-out>
+		</testcase>
+		<testcase name="Mutant #7" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/domain/book.py" line="3">
+			<system-out>        self.title = title</system-out>
+		</testcase>
+		<testcase name="Mutant #8" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/domain/book.py" line="4">
+			<system-out>        self.author = author  #</system-out>
+		</testcase>
+		<testcase name="Mutant #9" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/domain/book.py" line="7">
+			<system-out>        return f&quot;{self.title} by {self.author}&quot;  #</system-out>
+		</testcase>
+		<testcase name="Mutant #10" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="2">
+			<failure type="failure" message="bad_survived">--- /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
++++ /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
+@@ -1,5 +1,5 @@
+ def fizz_buzz(n):
+-    if n % 15 == 0:  #
++    if n / 15 == 0:  #
+         return &quot;fizz buzz&quot;  #
+ 
+     if n % 3 == 0:
+</failure>
+			<system-out>    if n % 15 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #11" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="2">
+			<failure type="failure" message="bad_survived">--- /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
++++ /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
+@@ -1,5 +1,5 @@
+ def fizz_buzz(n):
+-    if n % 15 == 0:  #
++    if n % 16 == 0:  #
+         return &quot;fizz buzz&quot;  #
+ 
+     if n % 3 == 0:
+</failure>
+			<system-out>    if n % 15 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #12" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="2">
+			<system-out>    if n % 15 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #13" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="2">
+			<failure type="failure" message="bad_survived">--- /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
++++ /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
+@@ -1,5 +1,5 @@
+ def fizz_buzz(n):
+-    if n % 15 == 0:  #
++    if n % 15 == 1:  #
+         return &quot;fizz buzz&quot;  #
+ 
+     if n % 3 == 0:
+</failure>
+			<system-out>    if n % 15 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #14" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="3">
+			<failure type="failure" message="bad_survived">--- /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
++++ /home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py
+@@ -1,6 +1,6 @@
+ def fizz_buzz(n):
+     if n % 15 == 0:  #
+-        return &quot;fizz buzz&quot;  #
++        return &quot;XXfizz buzzXX&quot;  #
+ 
+     if n % 3 == 0:
+         return &quot;fizz&quot;
+</failure>
+			<system-out>        return &quot;fizz buzz&quot;  #</system-out>
+		</testcase>
+		<testcase name="Mutant #15" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="5">
+			<system-out>    if n % 3 == 0:</system-out>
+		</testcase>
+		<testcase name="Mutant #16" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="5">
+			<system-out>    if n % 3 == 0:</system-out>
+		</testcase>
+		<testcase name="Mutant #17" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="5">
+			<system-out>    if n % 3 == 0:</system-out>
+		</testcase>
+		<testcase name="Mutant #18" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="5">
+			<system-out>    if n % 3 == 0:</system-out>
+		</testcase>
+		<testcase name="Mutant #19" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="6">
+			<system-out>        return &quot;fizz&quot;</system-out>
+		</testcase>
+		<testcase name="Mutant #20" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="8">
+			<system-out>    if n % 5 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #21" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="8">
+			<system-out>    if n % 5 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #22" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="8">
+			<system-out>    if n % 5 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #23" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="8">
+			<system-out>    if n % 5 == 0:  #</system-out>
+		</testcase>
+		<testcase name="Mutant #24" file="/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/fizz_buzz.py" line="9">
+			<system-out>        return &quot;buzz&quot;  #</system-out>
+		</testcase>
+	</testsuite>
+</testsuites>
+
