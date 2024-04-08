@@ -14,7 +14,7 @@ class Test_ReshapeResult:
         if os.path.exists(self.PR_COMMENT_TXT_PATH):
             os.remove(self.PR_COMMENT_TXT_PATH)
 
-    def test_回帰(self) -> None:
+    def test_regression(self) -> None:
         main(
             temporary_directory="tests/data/temporary",
             prefix_to_remove="/home/runner/work/python-mutation-report/python-mutation-report"
