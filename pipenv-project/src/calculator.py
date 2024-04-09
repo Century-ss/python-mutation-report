@@ -5,8 +5,8 @@ class Calculator:
 
     @staticmethod
     def subtract(a: int, b: int) -> int:
-        return a - b
+        return a - b  #
 
     @staticmethod
     def multiple(a: int, b: int) -> int:
-        return a * b
+        return a * b  #
