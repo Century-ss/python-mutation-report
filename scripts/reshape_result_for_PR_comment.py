@@ -38,7 +38,8 @@ def main(temporary_directory, prefix_to_remove) -> None:
     table_contents = []
 
     for tr in soup.find_all("tr"):
-        if len(tr.find_all("th")) > 0:
+        if tr.find("td") is None:
+            # NOTE: Skip the first row because it is the header of the table.
             continue
         row_element = {
             column.get_text(): content.get_text()

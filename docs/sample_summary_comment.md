@@ -1,4 +1,4 @@
-<details><summary>Mutation Test Result　　🎉 10　　⏰ 0　　🤔 0　　🙁 5　　🔇 9</summary>
+<details><summary>Mutation Test Result　　🎉 8　　⏰ 0　　🤔 0　　🙁 4　　🔇 12</summary>
 
 <br>
 
@@ -10,7 +10,7 @@ Legend for output:
 🔇 Skipped.          Skipped.
 
 
-<table border="1"><tr><th>File</th><th>🎉 Killed</th><th>🙁 Survived</th><th>% killed / (killed + survived)</th></tr><tr><td>pipenv-project/src/calculator.py</td><td>2</td><td>1</td><td>66.67</td></tr><tr><td>pipenv-project/src/domain/book.py</td><td>2</td><td>0</td><td>100.00</td></tr><tr><td>pipenv-project/src/fizz_buzz.py</td><td>6</td><td>4</td><td>60.00</td></tr></table>
+<table border="1"><tr><th>File</th><th>🎉 Killed</th><th>🙁 Survived</th><th>% killed/(killed + survived)</th></tr><tr><td>pipenv-project/src/calculator.py</td><td>0</td><td>0</td><td>-</td></tr><tr><td>pipenv-project/src/domain/book.py</td><td>2</td><td>0</td><td>100.00</td></tr><tr><td>pipenv-project/src/fizz_buzz.py</td><td>6</td><td>4</td><td>60.00</td></tr></table>
 
 <details><summary>List of tests used for mutation</summary>
 
@@ -22,24 +22,6 @@ Legend for output:
 
 <br>
 ※ 🙁 Survived, ⏰Timeout, 🤔Suspicious are shown below.
-
-<details><summary>pipenv-project/src/calculator.py</summary>
-
-## Survived
-Survived mutation testing. These mutants show holes in your test suite.
-### Line number:4
-```python
-@@ -1,7 +1,7 @@
- class Calculator:
-     @staticmethod
-     def add(a: int, b: int) -> int:
--        return a - b  #
-+        return a + b  #
- 
-     @staticmethod
-     def subtract(a: int, b: int) -> int:
-```
-</details>
 
 <details><summary>pipenv-project/src/fizz_buzz.py</summary>
 
