@@ -1,11 +1,26 @@
 # python-mutation-report
-This python-mutation-report performs a mutation test with `mutmut` of the pip package on the changed lines of file in the pull request,  
-and comments the mutation test summary in the pull_request, as shown in the [example](docs/sample_summary_comment.md) below.
+This python-mutation-report performs a mutation test with `mutmut` of the pip package on the changed lines of file in the pull request, and comments the mutation test summary in the pull_request, as shown in the [example](docs/sample_summary_comment.md) below.
 
-# TODO change image
 <img src="docs/sample_summary_comment.png" width="700">
 
 ## Example usage in workflow
+- If the directory structure is as follows.
+  ```
+  .
+  ├── README.md
+  └── python-project
+      ├── Pipfile
+      ├── Pipfile.lock
+      ├── src
+      │   ├── __init__.py
+      │   ├── src_1.py
+      │   └──  src_2.py
+      └── tests
+          ├── __init__.py
+          ├── test_src_1.py
+          └──  test_src_2.py
+  ```
+
 ```yml
 on:
   pull_request:
@@ -49,9 +64,9 @@ jobs:
 ## Inputs
 - Required parameters
   - `lock-file-path`: Lock file path for installing python dependencies. The following lock files are supported.
-    - Pip's `requirements.txt`
-    - Pipenv's `Pipfile.lock`
-    - Rye's `requirements-dev.lock` or `requirements.lock`.
+    - `requirements.txt` of pip.
+    - `Pipfile.lock` of pipenv
+    - `requirements-dev.lock` or `requirements.lock` of rye.
   - `src-directory`: Directory path of the source to plant the mutant.
   - `test-directory`: Directory path of the test to evaluate the mutant.
 - Optional parameters.
