@@ -25,13 +25,10 @@ Legend for output:
 
 <details><summary>pipenv-project/src/calculator.py</summary>
 
-Killed 2 out of 6 mutants
 ## Survived
 Survived mutation testing. These mutants show holes in your test suite.
 ### Line number:4
 ```python
---- pipenv-project/src/calculator.py
-+++ pipenv-project/src/calculator.py
 @@ -1,7 +1,7 @@
  class Calculator:
      @staticmethod
@@ -44,20 +41,12 @@ Survived mutation testing. These mutants show holes in your test suite.
 ```
 </details>
 
-<details><summary>pipenv-project/src/domain/book.py</summary>
-
-Killed 2 out of 3 mutants
-</details>
-
 <details><summary>pipenv-project/src/fizz_buzz.py</summary>
 
-Killed 6 out of 15 mutants
 ## Survived
 Survived mutation testing. These mutants show holes in your test suite.
 ### Line number:2
 ```python
---- pipenv-project/src/fizz_buzz.py
-+++ pipenv-project/src/fizz_buzz.py
 @@ -1,5 +1,5 @@
  def fizz_buzz(n):
 -    if n % 15 == 0:  #
@@ -68,8 +57,6 @@ Survived mutation testing. These mutants show holes in your test suite.
 ```
 ### Line number:2
 ```python
---- pipenv-project/src/fizz_buzz.py
-+++ pipenv-project/src/fizz_buzz.py
 @@ -1,5 +1,5 @@
  def fizz_buzz(n):
 -    if n % 15 == 0:  #
@@ -80,8 +67,6 @@ Survived mutation testing. These mutants show holes in your test suite.
 ```
 ### Line number:2
 ```python
---- pipenv-project/src/fizz_buzz.py
-+++ pipenv-project/src/fizz_buzz.py
 @@ -1,5 +1,5 @@
  def fizz_buzz(n):
 -    if n % 15 == 0:  #
@@ -92,8 +77,6 @@ Survived mutation testing. These mutants show holes in your test suite.
 ```
 ### Line number:3
 ```python
---- pipenv-project/src/fizz_buzz.py
-+++ pipenv-project/src/fizz_buzz.py
 @@ -1,6 +1,6 @@
  def fizz_buzz(n):
      if n % 15 == 0:  #

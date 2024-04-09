@@ -58,7 +58,7 @@ def main(temporary_directory, prefix_to_remove) -> None:
         killed = int(row[COLUMNS_TO_CONVERT["Killed"]])
         survived = int(row[COLUMNS_TO_CONVERT["Survived"]])
         if killed + survived == 0:
-            row["% killed/(killed + survived)"] = "0.00"
+            row["% killed/(killed + survived)"] = "-"
             continue
 
         row["% killed / (killed + survived)"] = "{:.2f}".format(
@@ -118,7 +118,13 @@ def main(temporary_directory, prefix_to_remove) -> None:
         content_children = list(content.stripped_strings)
         code_blocks = ""
         for index, element in enumerate(content_children):
-            if index == 0:
+            if element == prefix_to_remove + file["relative_path"]:
+                # NOTE: Skip the first line because it is the file path as below.
+                # '/home/runner/work/python-mutation-report/python-mutation-report/pipenv-project/src/calculator.py'
+                continue
+            if re.match(r"Killed \d+ out of \d+ mutants", element) is not None:
+                # NOTE: Skip the line because it is the summary of the file as below.
+                # 'Killed 2 out of 6 mutants'
                 continue
             if element in ["Survived", "Timeouts", "Suspicious"]:
                 element = f"## {element}"
@@ -132,18 +138,24 @@ def main(temporary_directory, prefix_to_remove) -> None:
                 content_children[index - 1].startswith("Mutant ")
                 and content_children[index - 1][7:].isdigit()
             ):
-                code_block = element.replace(prefix_to_remove, "")
+                diff_file_pattern = re.compile(r"^[-+]{3} " + re.escape(prefix_to_remove))
+                code_block = "\n".join(
+                    line for line in element.split("\n") if not diff_file_pattern.match(line)
+                )
                 element = f"{code_block}\n```"
 
             code_blocks += element + "\n"
 
-        mutants_per_file += (
-            "<details><summary>"
-            + file["relative_path"]
-            + "</summary>\n\n"
-            + code_blocks
-            + "</details>\n\n"
-        )
+        if code_blocks == "":
+            continue
+        else:
+            mutants_per_file += (
+                "<details><summary>"
+                + file["relative_path"]
+                + "</summary>\n\n"
+                + code_blocks
+                + "</details>\n\n"
+            )
 
     PR_comment = (
         "<details><summary>"

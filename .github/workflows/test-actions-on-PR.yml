@@ -29,3 +29,4 @@ jobs:
           path: |
             temporary
             pipenv-project
+          retention-days: 5
