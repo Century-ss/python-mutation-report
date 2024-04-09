@@ -14,6 +14,10 @@ class Test_ReshapeResult:
         if os.path.exists(self.PR_COMMENT_TXT_PATH):
             os.remove(self.PR_COMMENT_TXT_PATH)
 
+    def _update_document(self, document: str) -> None:
+        with open("docs/sample_summary_comment.md", "w") as f:
+            f.write(document)
+
     def test_regression(self) -> None:
         main(
             temporary_directory="tests/data/temporary",
@@ -26,3 +30,4 @@ class Test_ReshapeResult:
             expected = f.read()
 
         assert actual == expected
+        self._update_document(actual)
