@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 import bs4
 
 
-def main(composite_action_path, temporary_directory, prefix_to_remove) -> None:
+def main(temporary_directory, prefix_to_remove) -> None:
     with open(os.path.join(temporary_directory, "run.txt"), "r") as f:
         run_result_rows = [s.rstrip() for s in f.readlines()]
 
@@ -163,7 +163,7 @@ def main(composite_action_path, temporary_directory, prefix_to_remove) -> None:
         + "</details>"
     )
 
-    with open(os.path.join(composite_action_path, "PR_comment.txt"), "w") as f:
+    with open(os.path.join(temporary_directory, "PR_comment.txt"), "w") as f:
         f.write(PR_comment)
 
 
@@ -180,7 +180,6 @@ if __name__ == "__main__":
     PREFIX_TO_REMOVE = WORKSPACE_PATH + "/"
 
     main(
-        composite_action_path=COMPOSITE_ACTION_PATH,
         temporary_directory=TEMPORARY_DIRECTORY,
         prefix_to_remove=PREFIX_TO_REMOVE,
     )

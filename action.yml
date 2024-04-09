@@ -154,5 +154,5 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
-      run: gh pr comment -F "${{ github.action_path }}/PR_comment.txt" "${URL}"
+      run: gh pr comment -F "${{ github.action_path }}/temporary/PR_comment.txt" "${URL}"
       shell: bash
