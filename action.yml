@@ -1,11 +1,11 @@
-name: "Hello World"
-description: "Greet someone"
+name: "Python Mutation Report"
+description: "Comment on the PR with mutation test results for changed lines. This will swiftly identify untested areas."
 inputs:
   lock-file-path:
     description: "Path of lock file to generate requirements.txt"
     required: true
   src-directory:
-    description: "Path of source directory to be muted"
+    description: "Path of source directory to be mutated"
     required: true
   test-directory:
     description: "Path of test directory"
@@ -18,6 +18,9 @@ inputs:
     description: "Python version to use. Default is 3.11."
     required: false
     default: "3.11"
+branding:
+  icon: "check-circle"
+  color: "green"
 runs:
   using: "composite"
   steps:
