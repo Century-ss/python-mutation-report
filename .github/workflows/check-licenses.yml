@@ -1,0 +1,43 @@
+name: 📄 Check licenses
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "requirements.lock"
+
+jobs:
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        id: setup-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
+          sed '/-e/d' requirements.lock > requirements.txt
+          pip install --no-cache-dir -r requirements.txt
+          pip install pip-licenses
+
+      - name: Show list of installed packages
+        run: pip-licenses --order=license
+
+      - name: Run Licenses Check
+        run: >
+          pip-licenses
+          --allow-only="
+            Apache Software License;
+            MIT License;
+            BSD License;
+            "
