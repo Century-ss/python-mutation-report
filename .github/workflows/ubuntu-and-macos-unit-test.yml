@@ -1,0 +1,60 @@
+name: 🧪 Automated ubuntu and macos unit test
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  file-changes:
+    name: Check file changes
+    runs-on: ubuntu-latest
+    outputs:
+      execute-test: ${{ steps.filter.outputs.matched }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            matched:
+              - scripts/**
+              - pipenv-project/**
+              - tests/**
+              - Pipfile
+              - Pipfile.lock
+              - .github/workflows/unit-test.yml
+              - .github/workflows/ubuntu-and-macos-unit-test.yml
+
+  ubuntu-unit-test:
+    name: ubuntu test
+    needs: file-changes
+    if: needs.file-changes.outputs.execute-test == 'true'
+    uses: ./.github/workflows/unit-test.yml
+    with:
+      hosted-runner-name: ubuntu-latest
+
+  macos-unit-test:
+    name: macos test
+    needs: file-changes
+    if: needs.file-changes.outputs.execute-test == 'true'
+    uses: ./.github/workflows/unit-test.yml
+    with:
+      hosted-runner-name: macos-latest
+
+  status-check:
+    name: unit test passed
+    needs: [ubuntu-unit-test, macos-unit-test]
+    if: always() && contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1

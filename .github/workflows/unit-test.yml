@@ -1,52 +1,29 @@
-name: 🧪 Automated unit test
+name: Unit test
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref }}
-  cancel-in-progress: true
+  workflow_call:
+    inputs:
+      hosted-runner-name:
+        required: true
+        type: string
 
 jobs:
-  file-changes:
-    name: Check file changes
-    runs-on: ubuntu-latest
-    outputs:
-      execute-test: ${{ steps.filter.outputs.matched }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            matched:
-              - scripts/**
-              - pipenv-project/**
-              - tests/**
-              - Pipfile
-              - Pipfile.lock
-              - .github/workflows/unit-test.yml
-
   unit-test:
-    runs-on: ubuntu-latest
-    name: Unit test
-    needs: file-changes
-    if: ${{ needs.file-changes.outputs.execute-test == 'true'}}
+    runs-on: ${{ inputs.hosted-runner-name }}
+    strategy:
+      fail-fast: false # If one job fails, the others work.
+      matrix:
+        python-version: ["3.11", "3.12"]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup python
+        id: setup-python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
           cache: "pipenv"
 
       - name: Install pipenv
@@ -55,7 +32,7 @@ jobs:
           python -m pip install pipenv
 
       - name: Create cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
@@ -65,11 +42,3 @@ jobs:
 
       - name: Perform unit test
         run: pipenv run pytest --cache-clear tests
-
-  status-check:
-    name: unit test passed
-    needs: [unit-test]
-    if: always() && contains(needs.*.result, 'failure')
-    runs-on: ubuntu-latest
-    steps:
-      - run: exit 1
