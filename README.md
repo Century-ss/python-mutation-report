@@ -42,7 +42,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: Century-ss/python-mutation-report@main
+      - uses: Century-ss/python-mutation-report@v1
         with:
           lock-file-path: "python-project/Pipfile.lock"
           src-directory: "python-project/src"
