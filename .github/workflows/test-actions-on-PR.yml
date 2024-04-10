@@ -1,6 +1,9 @@
-name: 🧪 Test this repository actions on PR
+name: 🧪 Test this repository actions in pipenv-project
 
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+      - "pipenv-project/**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
