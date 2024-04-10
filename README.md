@@ -1,4 +1,8 @@
 # python-mutation-report
+![GitHub Release](https://img.shields.io/github/v/release/Century-ss/python-mutation-report)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/Century-ss/python-mutation-report/ubuntu-and-macos-unit-test.yml?branch=main&event=push&label=unit%20test)
+![GitHub License](https://img.shields.io/github/license/Century-ss/python-mutation-report?color=blue)
+
 This python-mutation-report performs a mutation test on the changed lines in the pull request with `mutmut` of the pip package, and comments the mutation test summary as shown in the [example](docs/sample_summary_comment.md) below.
 
 <img src="docs/sample_summary_comment.png" width="700">
