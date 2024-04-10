@@ -7,7 +7,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  hello_world_job:
+  test-mutation-report-action:
     runs-on: ubuntu-latest
     name: Test mutation report action
     permissions:
@@ -16,8 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - id: foo
-        uses: ./
+      - uses: ./
         with:
           lock-file-path: "pipenv-project/Pipfile.lock"
           src-directory: "pipenv-project/src"

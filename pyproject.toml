@@ -10,5 +10,4 @@ select = [
     "C",  # flake8-comprehensions
     "B",  # flake8-bugbear
 ]
-ignore = ["E501"]  # 1行の文字数制限. blackが出来る限りやってくれるので無視する
-line-length = 100
+ignore = ["E501"]

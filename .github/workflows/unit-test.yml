@@ -1,0 +1,72 @@
+name: 🧪 Automated unit test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  file-changes:
+    name: Check file changes
+    runs-on: ubuntu-latest
+    outputs:
+      execute-test: ${{ steps.filter.outputs.matched }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            matched:
+              - scripts/**
+              - pipenv-project/**
+              - tests/**
+              - Pipfile
+              - Pipfile.lock
+              - .github/workflows/unit-test.yml
+
+  unit-test:
+    runs-on: ubuntu-latest
+    name: Unit test
+    needs: file-changes
+    if: ${{ needs.file-changes.outputs.execute-test == 'true'}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pipenv"
+
+      - name: Install pipenv
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pipenv
+
+      - name: Create cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
+
+      - name: Install dependencies
+        run: pipenv sync --dev
+
+      - name: Perform unit test
+        run: pipenv run pytest --cache-clear tests
+
+  status-check:
+    name: unit test passed
+    needs: [unit-test]
+    if: always() && contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
