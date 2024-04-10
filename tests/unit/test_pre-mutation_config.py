@@ -15,7 +15,7 @@ def pre_mutation(context) -> None:
 
 class Test_GenerateMutmutConfig:
     MUTMUT_CONFIG_PATH = os.path.join("tests/data/where-to-run-test", "mutmut_config.py")
-    PR_DIFF_CONTENTS_PATH = os.path.join("tests/data/temporary", "pr_diff_contents.txt")
+    PR_DIFF_CONTENTS_PATH = os.path.join("tests/data/temporary", "PR_diff_contents.txt")
     WORKSPACE_PATH = "/workspace"
 
     def setup_method(self) -> None:
