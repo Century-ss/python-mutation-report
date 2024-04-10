@@ -158,6 +158,13 @@ def main(temporary_directory, prefix_to_remove) -> None:
                 + "</details>\n\n"
             )
 
+    if mutants_per_file == "":
+        description_of_mutants_per_file = "Not found 🙁 Survived, ⏰Timeout, 🤔Suspicious mutants."
+    else:
+        description_of_mutants_per_file = (
+            "※ 🙁 Survived, ⏰Timeout, 🤔Suspicious are shown below." + "\n\n"
+        )
+
     PR_comment = (
         "<details><summary>"
         + main_summary
@@ -170,8 +177,7 @@ def main(temporary_directory, prefix_to_remove) -> None:
         + test_paths_of_sub_summary
         # + "※ ⏰Timeout, 🤔Suspicious and 🔇Skipped are not shown in the table."
         + "\n<br>\n"
-        + "※ 🙁 Survived, ⏰Timeout, 🤔Suspicious are shown below."
-        + "\n\n"
+        + description_of_mutants_per_file
         + mutants_per_file
         + "</details>"
     )
