@@ -79,6 +79,13 @@ runs:
       with:
         python-version: "${{ inputs.python-version }}"
 
+    - name: Install actions repository dependencies
+      run: |
+        sed '/-e/d' "${{ github.action_path }}/requirements.lock" > "${{ github.action_path }}/requirements.txt"
+        pip3 install --no-cache-dir -r "${{ github.action_path }}/requirements.txt"
+      shell: bash
+      # pytest may not need to be installed if it is already installed in the lock file
+
     - name: Generate requirements.txt
       # Uses the path of the lock file from root, so must be run from root.
       run: python3 "${{ github.action_path }}/scripts/generate_requirements.py"
@@ -86,21 +93,9 @@ runs:
         LOCK_FILE_PATH: ${{ inputs.lock-file-path }}
       shell: bash
 
-    - name: Install dependencies
-      run: |
-        pip3 install --no-cache-dir -r requirements.txt
-        pip3 install mutmut==2.4.4
-        pip3 install beautifulsoup4==4.12.3
-
-        if grep -q 'pytest' requirements.txt
-        then
-            echo "pytest is listed in requirements.txt and already installed."
-        else
-            echo "pytest is not listed in requirements.txt. So installing pytest==8.1.1."
-            pip3 install pytest==8.1.1
-        fi
+    - name: Install caller repository dependencies
+      run: pip3 install --no-cache-dir -r requirements.txt
       shell: bash
-      # pytest may not need to be installed if it is already installed in the lock file
 
     - name: Create __init__.py in test directory if src and test are not same directory
       run: |
