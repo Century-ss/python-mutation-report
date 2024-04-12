@@ -1,7 +1,7 @@
 class Calculator:
     @staticmethod
     def add(a: int, b: int) -> int:
-        return a - b
+        return a - b  #
 
     @staticmethod
     def subtract(a: int, b: int) -> int:
@@ -9,4 +9,4 @@ class Calculator:
 
     @staticmethod
     def multiple(a: int, b: int) -> int:
-        return a * b
+        return a * b  #

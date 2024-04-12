@@ -11,7 +11,6 @@ def test_buzz() -> None:
 
 
 def test_fizz_buzz() -> None:
-    # assert fizz_buzz(15) == "fizz buzz"
     assert True
 
 
