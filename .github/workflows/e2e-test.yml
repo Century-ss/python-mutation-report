@@ -18,8 +18,6 @@ jobs:
           fetch-depth: 0
 
       - name: Create and checkout new branch
-        # mkdir development/backup-pipenv-project
-        # cp -r pipenv-project/* development/backup-pipenv-project
         run: |
           rm -rf pipenv-project ; mkdir pipenv-project;
           cp -r development/pipenv-project-to-replace/* pipenv-project
@@ -30,7 +28,12 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add pipenv-project
           git commit -m "Auto commit by GitHub Actions"
-          git push origin ${{ github.head_ref }}
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
 
       - name: Mutaion report
         uses: ./
