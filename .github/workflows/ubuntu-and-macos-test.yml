@@ -64,7 +64,7 @@ jobs:
       contents: write
       pull-requests: write
     needs: [file-changes, ubuntu-unit-test, macos-unit-test]
-    if: needs.file-changes.outputs.execute-e2e-test == 'true'
+    if: always() && needs.file-changes.outputs.execute-e2e-test == 'true'
     uses: ./.github/workflows/e2e-test.yml
     with:
       hosted-runner-name: ubuntu-latest
@@ -75,7 +75,7 @@ jobs:
       contents: write
       pull-requests: write
     needs: [file-changes, ubuntu-e2e-test]
-    if: needs.file-changes.outputs.execute-e2e-test == 'true'
+    if: always() && needs.file-changes.outputs.execute-e2e-test == 'true'
     uses: ./.github/workflows/e2e-test.yml
     with:
       hosted-runner-name: macos-latest
