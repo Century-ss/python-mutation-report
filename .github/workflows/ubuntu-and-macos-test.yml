@@ -45,15 +45,6 @@ jobs:
               - .github/workflows/e2e-test.yml
               - .github/workflows/ubuntu-and-macos-test.yml
 
-  e2e-test:
-    name: e2e test
-    permissions:
-      contents: write
-      pull-requests: write
-    needs: file-changes
-    if: needs.file-changes.outputs.execute-e2e-test == 'true'
-    uses: ./.github/workflows/e2e-test.yml
-
   ubuntu-unit-test:
     name: ubuntu test
     needs: [file-changes]
@@ -69,6 +60,15 @@ jobs:
     uses: ./.github/workflows/unit-test.yml
     with:
       hosted-runner-name: macos-latest
+
+  e2e-test:
+    name: e2e test
+    permissions:
+      contents: write
+      pull-requests: write
+    needs: [file-changes, ubuntu-unit-test, macos-unit-test]
+    if: needs.file-changes.outputs.execute-e2e-test == 'true'
+    uses: ./.github/workflows/e2e-test.yml
 
   status-check:
     name: acceptance test passed
