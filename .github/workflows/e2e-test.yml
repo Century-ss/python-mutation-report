@@ -1,0 +1,65 @@
+name: Auto Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create and checkout new branch
+        run: |
+          cp -r pipenv-project/* development/backup-pipenv-project
+          cp -r development/pipenv-project-to-replace/* pipenv-project
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Auto commit by GitHub Actions"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+
+      - name: Mutaion report
+        uses: ./
+        with:
+          lock-file-path: "pipenv-project/Pipfile.lock"
+          src-directory: "pipenv-project/src"
+          test-directory: "pipenv-project/tests"
+          where-to-run-test: "pipenv-project"
+
+      - name: Pull changes
+        run: git pull origin ${{ github.head_ref }}
+
+      - name: Create and checkout new branch
+        run: |
+          mv -f development/backup-pipenv-project pipenv-project
+          rm development/pipenv-project/.gitkeep
+          touch development/backup-pipenv-project/.gitkeep
+
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "reverse push for test"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
