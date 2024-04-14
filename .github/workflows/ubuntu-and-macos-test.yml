@@ -61,14 +61,6 @@ jobs:
     with:
       hosted-runner-name: macos-latest
 
-  unit-test-status-check:
-    name: unit test passed
-    needs: [ubuntu-unit-test, macos-unit-test]
-    if: always() && contains(needs.*.result, 'failure')
-    runs-on: ubuntu-latest
-    steps:
-      - run: exit 1
-
   e2e-test:
     name: e2e test
     permissions:
@@ -78,9 +70,9 @@ jobs:
     if: needs.file-changes.outputs.execute-e2e-test == 'true'
     uses: ./.github/workflows/e2e-test.yml
 
-  e2e-test-status-check:
-    name: e2e test passed
-    needs: e2e-test
+  status-check:
+    name: acceptance test passed
+    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
     if: always() && contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     steps:
