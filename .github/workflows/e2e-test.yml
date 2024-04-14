@@ -35,14 +35,14 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
 
-      - name: Mutaion report
-        uses: ./
-        with:
-          lock-file-path: "pipenv-project/Pipfile.lock"
-          src-directory: "pipenv-project/src"
-          test-directory: "pipenv-project/tests"
-          where-to-run-test: "pipenv-project"
-          branch: ${{ github.head_ref }}
+      # - name: Mutaion report
+      #   uses: ./
+      #   with:
+      #     lock-file-path: "pipenv-project/Pipfile.lock"
+      #     src-directory: "pipenv-project/src"
+      #     test-directory: "pipenv-project/tests"
+      #     where-to-run-test: "pipenv-project"
+      #     branch: ${{ github.head_ref }}
 
       - name: Pull changes
         run: git pull origin ${{ github.head_ref }}
