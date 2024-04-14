@@ -56,7 +56,7 @@ jobs:
 
   ubuntu-unit-test:
     name: ubuntu test
-    needs: [file-changes, e2e-test]
+    needs: [file-changes]
     if: needs.file-changes.outputs.execute-unit-test == 'true'
     uses: ./.github/workflows/unit-test.yml
     with:
@@ -64,7 +64,7 @@ jobs:
 
   macos-unit-test:
     name: macos test
-    needs: [file-changes, e2e-test]
+    needs: [file-changes]
     if: needs.file-changes.outputs.execute-unit-test == 'true'
     uses: ./.github/workflows/unit-test.yml
     with:
