@@ -73,10 +73,17 @@ jobs:
   status-check:
     name: acceptance test passed
     needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
-    if: always() && contains(needs.*.result, 'failure')
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: exit 1
+      - run: |
+          if needs.ubuntu-unit-test.result == 'failure' || needs.macos-unit-test.result == 'failure' || needs.e2e-test.result == 'failure'; then
+            echo "One of the tests failed"
+            exit 1
+          else
+            echo "All tests passed or cancelled"
+            exit 0
+          fi
 
   status-show:
     name: show status
