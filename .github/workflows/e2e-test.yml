@@ -48,7 +48,7 @@ jobs:
         run: git pull origin ${{ github.head_ref }}
 
       - name: Revert last commit
-        run: git reset --hard HEAD^
+        run: git update-ref -d HEAD
 
       # - name: Create and checkout new branch
       #   run: |
