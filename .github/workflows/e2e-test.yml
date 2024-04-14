@@ -48,7 +48,9 @@ jobs:
         run: git pull origin ${{ github.head_ref }}
 
       - name: Revert last commit
-        run: git update-ref -d HEAD
+        run: |
+          git update-ref -d HEAD
+          git push origin ${{ github.head_ref }} -f
 
       # - name: Create and checkout new branch
       #   run: |
@@ -60,12 +62,12 @@ jobs:
       #     git add pipenv-project development/backup-pipenv-project
       #     git commit -m "reverse push for test"
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-          force_with_lease: true
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.head_ref }}
+      #     force_with_lease: true
 
       - name: Get PR comment
         env:
