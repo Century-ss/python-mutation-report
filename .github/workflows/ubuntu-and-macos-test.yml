@@ -1,0 +1,94 @@
+name: 🧪 Automated ubuntu and macos unit test
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  file-changes:
+    name: Check file changes
+    runs-on: ubuntu-latest
+    outputs:
+      execute-unit-test: ${{ steps.filter.outputs.unit-test }}
+      execute-e2e-test: ${{ steps.filter.outputs.e2e-test }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            unit-test:
+              - scripts/**
+              - pipenv-project/**
+              - tests/**
+              - Pipfile
+              - Pipfile.lock
+              - .github/workflows/unit-test.yml
+              - .github/workflows/ubuntu-and-macos-test.yml
+            e2e-test:
+              - scripts/**
+              - pipenv-project/**
+              - development/pipenv-project-to-replace/**
+              - action.yml
+              - requirements.lock
+              - tests/data/expected/PR_comment.txt
+              - .github/workflows/e2e-test.yml
+              - .github/workflows/ubuntu-and-macos-test.yml
+
+  ubuntu-unit-test:
+    name: ubuntu test
+    needs: file-changes
+    if: needs.file-changes.outputs.execute-unit-test == 'true'
+    uses: ./.github/workflows/unit-test.yml
+    with:
+      hosted-runner-name: ubuntu-latest
+
+  macos-unit-test:
+    name: macos test
+    needs: file-changes
+    if: needs.file-changes.outputs.execute-unit-test == 'true'
+    uses: ./.github/workflows/unit-test.yml
+    with:
+      hosted-runner-name: macos-latest
+
+  e2e-test:
+    name: e2e test
+    permissions:
+      contents: write
+      pull-requests: write
+    needs: file-changes
+    if: needs.file-changes.outputs.execute-e2e-test == 'true'
+    uses: ./.github/workflows/e2e-test.yml
+
+  status-check:
+    name: acceptance test passed
+    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if needs.ubuntu-unit-test.result == 'failure' || needs.macos-unit-test.result == 'failure' || needs.e2e-test.result == 'failure'; then
+            echo "One of the tests failed"
+            exit 1
+          else
+            echo "All tests passed or cancelled"
+            exit 0
+          fi
+
+  status-show:
+    name: show status
+    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
+    if:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo '${{ toJSON(needs) }}'

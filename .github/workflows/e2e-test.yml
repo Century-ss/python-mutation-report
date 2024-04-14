@@ -1,0 +1,83 @@
+name: e2e-test
+
+on:
+  workflow_call:
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Create and checkout new branch
+        run: |
+          rm -rf pipenv-project ; mkdir pipenv-project;
+          cp -r development/pipenv-project-to-replace/* pipenv-project
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add pipenv-project
+          git commit -m "Auto commit by GitHub Actions"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.head_ref }}
+
+      - name: Mutaion report
+        uses: ./
+        with:
+          lock-file-path: "pipenv-project/Pipfile.lock"
+          src-directory: "pipenv-project/src"
+          test-directory: "pipenv-project/tests"
+          where-to-run-test: "pipenv-project"
+          branch: ${{ github.head_ref }}
+
+      - name: Pull changes
+        run: git pull origin ${{ github.head_ref }}
+
+      - name: Revert last commit
+        run: |
+          git revert HEAD
+          git push origin ${{ github.head_ref }}
+
+      # - name: Create and checkout new branch
+      #   run: |
+      #     rm -rf pipenv-project ; mkdir pipenv-project;
+      #     mv -f development/backup-pipenv-project/* pipenv-project
+
+      # - name: Commit changes
+      #   run: |
+      #     git add pipenv-project development/backup-pipenv-project
+      #     git commit -m "reverse push for test"
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.head_ref }}
+
+      - name: Get PR comment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr view "${URL}" --json comments | jq '.comments[-1].body' > actual_PR_comment.txt
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compare PR comment
+        run: python3 tests/e2e/compare_PR_comment.py
