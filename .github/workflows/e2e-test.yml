@@ -46,16 +46,6 @@ jobs:
           src-directory: "pipenv-project/src"
           test-directory: "pipenv-project/tests"
           where-to-run-test: "pipenv-project"
-          branch: ${{ github.head_ref }}
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-
-      # - name: Pull changes
-      #   run: git pull origin ${{ github.head_ref }}
 
       - name: Revert last commit
         run: git reset --hard HEAD~1

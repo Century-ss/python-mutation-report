@@ -31,18 +31,21 @@ on:
     paths:
       - "python-project/src/**"
       - "python-project/tests/**"
+      - "python-project/Pipfile.lock"
 
 jobs:
-  python-mutation-testing-report:
+  mutation-testing-report:
     runs-on: ubuntu-latest
-    name: Python mutation testing report
+    name: Mutation testing report
     timeout-minutes: 15
     permissions:
       pull-requests: write
       contents: read
 
     steps:
-      - uses: Century-ss/python-mutation-report@v1
+      - uses: actions/checkout@v4
+
+      - uses: Century-ss/python-mutation-report@v2
         with:
           lock-file-path: "python-project/Pipfile.lock"
           src-directory: "python-project/src"
