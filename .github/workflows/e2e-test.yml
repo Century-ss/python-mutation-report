@@ -23,19 +23,13 @@ jobs:
           cp -r pipenv-project/* development/backup-pipenv-project
           cp -r development/pipenv-project-to-replace/* pipenv-project
 
-      - name: Commit changes
+      - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add pipenv-project development/backup-pipenv-project
           git commit -m "Auto commit by GitHub Actions"
           git push origin ${{ github.head_ref }}
-
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     branch: ${{ github.head_ref }}
 
       - name: Mutaion report
         uses: ./
@@ -49,21 +43,26 @@ jobs:
       - name: Pull changes
         run: git pull origin ${{ github.head_ref }}
 
-      - name: Create and checkout new branch
+      - name: Revert last commit
         run: |
-          rm -rf pipenv-project ; mkdir pipenv-project;
-          mv -f development/backup-pipenv-project/* pipenv-project
+          git revert HEAD
+          git push origin ${{ github.head_ref }}
 
-      - name: Commit changes
-        run: |
-          git add pipenv-project development/backup-pipenv-project
-          git commit -m "reverse push for test"
+      # - name: Create and checkout new branch
+      #   run: |
+      #     rm -rf pipenv-project ; mkdir pipenv-project;
+      #     mv -f development/backup-pipenv-project/* pipenv-project
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
+      # - name: Commit changes
+      #   run: |
+      #     git add pipenv-project development/backup-pipenv-project
+      #     git commit -m "reverse push for test"
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.head_ref }}
 
       - name: Get PR comment
         env:
