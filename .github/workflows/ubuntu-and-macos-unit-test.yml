@@ -51,9 +51,22 @@ jobs:
     with:
       hosted-runner-name: macos-latest
 
+  e2e-test:
+    name: e2e test
+    needs: file-changes
+    uses: ./.github/workflows/e2e-test.yml
+
+  status-show:
+    name: show status
+    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo '${{ toJSON(needs) }}'
+
   status-check:
     name: unit test passed
-    needs: [ubuntu-unit-test, macos-unit-test]
+    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
     if: always() && contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     steps:
