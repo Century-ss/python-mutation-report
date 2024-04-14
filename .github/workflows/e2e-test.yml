@@ -29,12 +29,13 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add pipenv-project development/backup-pipenv-project
           git commit -m "Auto commit by GitHub Actions"
+          git push origin ${{ github.head_ref }}
 
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.head_ref }}
 
       - name: Mutaion report
         uses: ./
