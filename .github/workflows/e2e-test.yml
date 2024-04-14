@@ -28,8 +28,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add pipenv-project
           git commit -m "Auto commit by GitHub Actions"
-
-      - run: git log --oneline -n 5
+          git log --oneline -n 5
 
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0
@@ -37,30 +36,20 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
 
-      # - name: Mutaion report
-      #   uses: ./
-      #   with:
-      #     lock-file-path: "pipenv-project/Pipfile.lock"
-      #     src-directory: "pipenv-project/src"
-      #     test-directory: "pipenv-project/tests"
-      #     where-to-run-test: "pipenv-project"
-      #     branch: ${{ github.head_ref }}
+      - name: Mutaion report
+        uses: ./
+        with:
+          lock-file-path: "pipenv-project/Pipfile.lock"
+          src-directory: "pipenv-project/src"
+          test-directory: "pipenv-project/tests"
+          where-to-run-test: "pipenv-project"
+          branch: ${{ github.head_ref }}
 
       - name: Pull changes
         run: git pull origin ${{ github.head_ref }}
 
       - name: Revert last commit
         run: git reset --hard HEAD~1
-
-      # - name: Create and checkout new branch
-      #   run: |
-      #     rm -rf pipenv-project ; mkdir pipenv-project;
-      #     mv -f development/backup-pipenv-project/* pipenv-project
-
-      # - name: Commit changes
-      #   run: |
-      #     git add pipenv-project development/backup-pipenv-project
-      #     git commit -m "reverse push for test"
 
       - name: Push changes
         uses: ad-m/github-push-action@v0.8.0

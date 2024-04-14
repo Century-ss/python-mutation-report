@@ -45,22 +45,6 @@ jobs:
               - .github/workflows/e2e-test.yml
               - .github/workflows/ubuntu-and-macos-test.yml
 
-  ubuntu-unit-test:
-    name: ubuntu test
-    needs: file-changes
-    if: needs.file-changes.outputs.execute-unit-test == 'true'
-    uses: ./.github/workflows/unit-test.yml
-    with:
-      hosted-runner-name: ubuntu-latest
-
-  macos-unit-test:
-    name: macos test
-    needs: file-changes
-    if: needs.file-changes.outputs.execute-unit-test == 'true'
-    uses: ./.github/workflows/unit-test.yml
-    with:
-      hosted-runner-name: macos-latest
-
   e2e-test:
     name: e2e test
     permissions:
@@ -69,6 +53,22 @@ jobs:
     needs: file-changes
     if: needs.file-changes.outputs.execute-e2e-test == 'true'
     uses: ./.github/workflows/e2e-test.yml
+
+  ubuntu-unit-test:
+    name: ubuntu test
+    needs: [file-changes, e2e-test]
+    if: needs.file-changes.outputs.execute-unit-test == 'true'
+    uses: ./.github/workflows/unit-test.yml
+    with:
+      hosted-runner-name: ubuntu-latest
+
+  macos-unit-test:
+    name: macos test
+    needs: [file-changes, e2e-test]
+    if: needs.file-changes.outputs.execute-unit-test == 'true'
+    uses: ./.github/workflows/unit-test.yml
+    with:
+      hosted-runner-name: macos-latest
 
   status-check:
     name: acceptance test passed
