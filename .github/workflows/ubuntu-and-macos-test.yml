@@ -17,7 +17,8 @@ jobs:
     name: Check file changes
     runs-on: ubuntu-latest
     outputs:
-      execute-test: ${{ steps.filter.outputs.matched }}
+      execute-unit-test: ${{ steps.filter.outputs.unit-test }}
+      execute-e2e-test: ${{ steps.filter.outputs.unit-test }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,19 +27,28 @@ jobs:
         id: filter
         with:
           filters: |
-            matched:
+            unit-test:
               - scripts/**
               - pipenv-project/**
               - tests/**
               - Pipfile
               - Pipfile.lock
               - .github/workflows/unit-test.yml
-              - .github/workflows/ubuntu-and-macos-unit-test.yml
+              - .github/workflows/ubuntu-and-macos-test.yml
+            e2e-test:
+              - scripts/**
+              - pipenv-project/**
+              - development/pipenv-project-to-replace/**
+              - action.yml
+              - requirements.lock
+              - tests/data/expected/PR_comment.txt
+              - .github/workflows/e2e-test.yml
+              - .github/workflows/ubuntu-and-macos-test.yml
 
   ubuntu-unit-test:
     name: ubuntu test
     needs: file-changes
-    if: needs.file-changes.outputs.execute-test == 'true'
+    if: needs.file-changes.outputs.execute-unit-test == 'true'
     uses: ./.github/workflows/unit-test.yml
     with:
       hosted-runner-name: ubuntu-latest
@@ -46,10 +56,18 @@ jobs:
   macos-unit-test:
     name: macos test
     needs: file-changes
-    if: needs.file-changes.outputs.execute-test == 'true'
+    if: needs.file-changes.outputs.execute-unit-test == 'true'
     uses: ./.github/workflows/unit-test.yml
     with:
       hosted-runner-name: macos-latest
+
+  unit-test-status-check:
+    name: unit test passed
+    needs: [ubuntu-unit-test, macos-unit-test]
+    if: always() && contains(needs.*.result, 'failure')
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
 
   e2e-test:
     name: e2e test
@@ -57,20 +75,21 @@ jobs:
       contents: write
       pull-requests: write
     needs: file-changes
+    if: needs.file-changes.outputs.execute-e2e-test == 'true'
     uses: ./.github/workflows/e2e-test.yml
 
-  status-show:
-    name: show status
-    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo '${{ toJSON(needs) }}'
-
-  status-check:
-    name: unit test passed
-    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
+  e2e-test-status-check:
+    name: e2e test passed
+    needs: e2e-test
     if: always() && contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
     steps:
       - run: exit 1
+
+  status-show:
+    name: show status
+    needs: [ubuntu-unit-test, macos-unit-test, e2e-test]
+    if:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo '${{ toJSON(needs) }}'

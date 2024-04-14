@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  create_pull_request:
+  e2e-test:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -70,20 +70,10 @@ jobs:
           URL: ${{ github.event.pull_request.html_url }}
         run: gh pr view "${URL}" --json comments | jq '.comments[-1].body' > actual_PR_comment.txt
 
-      - name: Compare PR comment
-        run: |
-          sed 's/^"//' actual_PR_comment.txt | sed 's/"$//' | sed 's/\\n/\n/g' > comment.txt
-          if diff actual_PR_comment.txt tests/data/expected/PR_comment.txt >/dev/null; then
-            echo "ファイルは一致しています"
-          else
-              echo "ファイルは一致していません"
-          fi
-
-      - name: Upload PR comment
-        uses: actions/upload-artifact@v2
+      - name: Setup python
+        uses: actions/setup-python@v5
         with:
-          name: pr-comment
-          path: |
-            actual_PR_comment.txt
-            comment.txt
-          retention-days: 1
+          python-version: "3.11"
+
+      - name: Compare PR comment
+        run: python3 tests/e2e/compare_PR_comment.py
