@@ -14,6 +14,10 @@ inputs:
     description: "Where to run the test. If none is specified, run from the root directory."
     required: false
     default: "."
+  branch:
+    description: "Where to run the test. If none is specified, run from the root directory."
+    required: false
+    default: ""
   python-version:
     description: "Python version to use. Default is 3.11."
     required: false
@@ -39,7 +43,14 @@ runs:
       shell: bash
 
     - name: Checkout caller repository
+      if: ${{ inputs.branch == '' }}
       uses: actions/checkout@v4
+
+    - name: Checkout caller repository
+      if: ${{ inputs.branch != '' }}
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.branch }}
 
     - name: Validate input parameters are directories or files
       run: |
