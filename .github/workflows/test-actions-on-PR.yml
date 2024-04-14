@@ -24,6 +24,7 @@ jobs:
           lock-file-path: "pipenv-project/Pipfile.lock"
           src-directory: "pipenv-project/src"
           test-directory: "pipenv-project/tests"
+          where-to-run-test: "pipenv-project"
 
       - uses: actions/upload-artifact@v4
         with:
