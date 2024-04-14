@@ -7,8 +7,7 @@ def test_add() -> None:
 
 
 def test_subtract() -> None:
-    # assert Calculator.add(1, 2) == 3
-    assert True
+    assert Calculator.subtract(2, 1) == 1
 
 
 def test_multiple() -> None:
