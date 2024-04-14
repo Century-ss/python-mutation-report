@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref }}
@@ -46,7 +43,7 @@ jobs:
               - .github/workflows/ubuntu-and-macos-test.yml
 
   ubuntu-unit-test:
-    name: ubuntu test
+    name: ubuntu unit
     needs: [file-changes]
     if: needs.file-changes.outputs.execute-unit-test == 'true'
     uses: ./.github/workflows/unit-test.yml
@@ -54,7 +51,7 @@ jobs:
       hosted-runner-name: ubuntu-latest
 
   macos-unit-test:
-    name: macos test
+    name: macos unit
     needs: [file-changes]
     if: needs.file-changes.outputs.execute-unit-test == 'true'
     uses: ./.github/workflows/unit-test.yml
@@ -62,7 +59,7 @@ jobs:
       hosted-runner-name: macos-latest
 
   ubuntu-e2e-test:
-    name: e2e test
+    name: ubuntu e2e
     permissions:
       contents: write
       pull-requests: write
@@ -73,7 +70,7 @@ jobs:
       hosted-runner-name: ubuntu-latest
 
   macos-e2e-test:
-    name: e2e test
+    name: macos e2e
     permissions:
       contents: write
       pull-requests: write
