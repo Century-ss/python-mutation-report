@@ -28,7 +28,7 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add pipenv-project development/backup-pipenv-project
+          git add pipenv-project
           git commit -m "Auto commit by GitHub Actions"
           git push origin ${{ github.head_ref }}
 
