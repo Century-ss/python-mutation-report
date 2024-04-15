@@ -18,14 +18,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-          fetch-depth: 0
+          fetch-depth: 0 # need for push
 
-      - name: Create and checkout new branch
+      - name: Making changes to the sample project
         run: |
           rm -rf pipenv-project ; mkdir pipenv-project;
           cp -r development/pipenv-project-to-replace/* pipenv-project
 
-      - name: Commit and push changes
+      - name: Commit changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-          fetch-depth: 0
+          fetch-depth: 0 # need for push
 
       - name: Mutaion report
         uses: ./
@@ -56,14 +56,15 @@ jobs:
       - name: Revert last commit
         run: git reset --hard HEAD~1
 
-      - name: Push changes
+      - name: Push revert changes
         uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
           force: true
 
-      - run: git log --oneline -n 5
+      - name: Confirm git log
+        run: git log --oneline -n 5
 
       - name: Get PR comment
         env:
