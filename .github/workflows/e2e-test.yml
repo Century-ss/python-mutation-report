@@ -39,6 +39,9 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.head_ref }}
 
+      - name: Wait 10 seconds for push to be reflected
+        run: sleep 10
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
