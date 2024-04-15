@@ -47,7 +47,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: Century-ss/python-mutation-report@v1
+      - uses: Century-ss/python-mutation-report@v2
         with:
           lock-file-path: "python-project/Pipfile.lock"
           src-directory: "python-project/src"
