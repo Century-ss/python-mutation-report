@@ -24,11 +24,19 @@ branding:
 runs:
   using: "composite"
   steps:
+    - name: Validate checkout action has been done in advance
+      run: |
+        if [ -z "$(ls -A)" ]; then
+          echo "Error: File or folder not found under workspace. Repository needs to be checked out in advance, have you done it?"
+          exit 1
+        fi
+      shell: bash
+
     - name: Validate input parameters is not empty
       run: |
-        [[ "${{ inputs.lock-file-path }}" ]] || { echo "Error lock-file-path input is empty" ; exit 1; }
-        [[ "${{ inputs.src-directory }}" ]] || { echo "Error src-directory input is empty" ; exit 1; }
-        [[ "${{ inputs.test-directory }}" ]] || { echo "Error test-directory input is empty" ; exit 1; }
+        [[ "${{ inputs.lock-file-path }}" ]] || { echo "Error: lock-file-path input is empty" ; exit 1; }
+        [[ "${{ inputs.src-directory }}" ]] || { echo "Error: src-directory input is empty" ; exit 1; }
+        [[ "${{ inputs.test-directory }}" ]] || { echo "Error: test-directory input is empty" ; exit 1; }
       shell: bash
 
     - name: Validate trigger event is pull_request
@@ -40,10 +48,10 @@ runs:
 
     - name: Validate input parameters are directories or files
       run: |
-        [ -f "${{ inputs.lock-file-path }}" ] || { echo "Error lock-file-path is not a file" ; exit 1; }
-        [ -d "${{ inputs.src-directory }}" ] || { echo "Error src-directory is not a directory" ; exit 1; }
-        [ -d "${{ inputs.test-directory }}" ] || { echo "Error test-directory is not a directory" ; exit 1; }
-        [ -d "${{ inputs.where-to-run-test }}" ] || { echo "Error where-to-run-test is not a directory" ; exit 1; }
+        [ -f "${{ inputs.lock-file-path }}" ] || { echo "Error: lock-file-path is not a file" ; exit 1; }
+        [ -d "${{ inputs.src-directory }}" ] || { echo "Error: src-directory is not a directory" ; exit 1; }
+        [ -d "${{ inputs.test-directory }}" ] || { echo "Error: test-directory is not a directory" ; exit 1; }
+        [ -d "${{ inputs.where-to-run-test }}" ] || { echo "Error: where-to-run-test is not a directory" ; exit 1; }
       shell: bash
 
     - name: Output changed filenames to txt
@@ -149,5 +157,5 @@ runs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
         URL: ${{ github.event.pull_request.html_url }}
-      run: gh pr comment -F "${{ github.action_path }}/temporary/PR_comment.txt" "${URL}"
+      run: gh pr comment "${URL}" --body-file "${{ github.action_path }}/temporary/PR_comment.txt"
       shell: bash
