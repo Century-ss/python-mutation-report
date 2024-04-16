@@ -36,14 +36,9 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add pipenv-project
-          git commit -m "Auto commit by GitHub Actions"
+          git commit -m "🚧 Auto commit by GitHub Actions"
+          git push origin ${{ github.head_ref }}
           git log --oneline -n 5
-
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.8.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
 
       - name: Wait 10 seconds for push to be reflected
         run: sleep 10
@@ -63,17 +58,10 @@ jobs:
           where-to-run-test: "pipenv-project"
 
       - name: Revert last commit
-        run: git reset --hard HEAD~1
-
-      - name: Push revert changes
-        uses: ad-m/github-push-action@v0.8.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-          force: true
-
-      - name: Confirm git log
-        run: git log --oneline -n 5
+        run: |
+          git reset --hard HEAD~1
+          git push origin ${{ github.head_ref }} --force
+          git log --oneline -n 5
 
       - name: Get PR comment
         env:
