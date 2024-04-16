@@ -10,7 +10,7 @@ This python-mutation-report performs a mutation test on the changed lines in the
 
 <img src="docs/sample_summary_comment.png" width="700">
 
-## Example usage in workflow
+## Usage
 - If the directory structure is as follows.
   ```
   .
