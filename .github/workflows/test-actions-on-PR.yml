@@ -1,32 +1,33 @@
-# name: 🧪 Test this repository actions in pipenv-project
+name: 🧪 Test this repository actions in pipenv-project
 
-# on:
-#   pull_request:
+on:
+  # pull_request:
+  workflow_call:
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.head_ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
 
-# jobs:
-#   test-mutation-report-action:
-#     runs-on: ubuntu-latest
-#     name: Test mutation report action
-#     permissions:
-#       pull-requests: write
+jobs:
+  test-mutation-report-action:
+    runs-on: ubuntu-latest
+    name: Test mutation report action
+    permissions:
+      pull-requests: write
 
-#     steps:
-#       - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-#       - uses: ./
-#         with:
-#           lock-file-path: "pipenv-project/Pipfile.lock"
-#           src-directory: "pipenv-project/src"
-#           test-directory: "pipenv-project/tests"
+      - uses: ./
+        with:
+          lock-file-path: "pipenv-project/Pipfile.lock"
+          src-directory: "pipenv-project/src"
+          test-directory: "pipenv-project/tests"
 
-#       - uses: actions/upload-artifact@v4
-#         with:
-#           name: temporary-pipenv-project
-#           path: |
-#             temporary
-#             pipenv-project
-#           retention-days: 5
+      - uses: actions/upload-artifact@v4
+        with:
+          name: temporary-pipenv-project
+          path: |
+            temporary
+            pipenv-project
+          retention-days: 5
