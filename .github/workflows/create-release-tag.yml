@@ -1,0 +1,127 @@
+name: Create a new version of the release tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: "Select the version type (major, minor, patch)"
+        required: true
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+        default: "patch"
+      is_updated_readme:
+        type: boolean
+        description: "if major version, confirm that usage in README.md has been updated with new major version"
+        default: false
+
+jobs:
+  release-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check README.md is updated, if major version
+        if: inputs.version_type == 'major' && inputs.is_updated_readme == false
+        run: |
+          echo "Error: Usage in README.md need to be updated with new major version."
+          exit 1
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if on main branch
+        run: |
+          if [ "$(git branch --show-current)" != "main" ]; then
+            echo "Error: This action can only be run on the main branch."
+            exit 1
+          fi
+
+      - name: Get latest release tag and check if it is a semantic version
+        id: latest_tag
+        run: |
+          latest_tag=$(git tag | sort -V | tail -n 1)
+          echo "Latest tag: $latest_tag"
+          if [[ ! "$latest_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Latest tag is not a semantic version."
+            exit 1
+          fi
+          echo "latest_tag=$latest_tag" >> $GITHUB_OUTPUT
+          current_version=$(echo "$latest_tag" | cut -c 2-)
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+
+      - name: Check if there are any changes since last tag
+        run: |
+          if git diff --quiet --exit-code "${{ steps.latest_tag.outputs.latest_tag }}" HEAD; then
+            echo "Error: No changes since lastest tag."
+            exit 1
+          else
+            echo "Differences found between lastest tag and HEAD, so creating new tag."
+          fi
+        # --quiet: Disable all output of the program
+        # --exit-code: Make the program exit with code 1 if there are differences, 0 if there are no differences.
+        # bash if statement: exit 0 become true, exit 1 become false
+
+      - name: Determine next version
+        id: next_version
+        run: |
+          IFS='.' read major minor patch <<< "${{ steps.latest_tag.outputs.current_version }}"
+          case "${{ github.event.inputs.version_type }}" in
+            major)
+              next_version="$((major + 1)).0.0"
+              ;;
+            minor)
+              next_version="$major.$((minor + 1)).0"
+              ;;
+            patch)
+              next_version="$major.$minor.$((patch + 1))"
+              ;;
+            *)
+              echo "Error: Invalid version type specified"
+              exit 1
+              ;;
+          esac
+          echo "Next version: $next_version"
+          echo "next_version=$next_version" >> $GITHUB_OUTPUT
+          echo "next_semantic_tag=v$next_version" >> $GITHUB_OUTPUT
+        # IFS='.': Split the string by dot.
+
+      - name: Check if major tag exists or not
+        id: check_major_tag
+        run: |
+          next_major_version=$(echo ${{ steps.next_version.outputs.next_version }} | cut -c 1)
+          next_major_tag="v$next_major_version"
+
+          echo "Checking if tag $next_major_tag exists"
+
+          if git rev-parse -q --verify "$next_major_tag" > /dev/null; then
+            major_tag_exists="true"
+          else
+            major_tag_exists="false"
+          fi
+
+          echo "major_tag_exists=$major_tag_exists" >> $GITHUB_OUTPUT
+          echo "next_major_tag=$next_major_tag" >> $GITHUB_OUTPUT
+
+      - name: Delete existing major tag
+        if: steps.check_major_tag.outputs.major_tag_exists == 'true'
+        run: |
+          git tag -d "${{ steps.check_major_tag.outputs.next_major_tag }}"
+          git push origin --delete "${{ steps.check_major_tag.outputs.next_major_tag }}"
+
+      - name: Create new major version tag
+        run: |
+          echo "Creating new major version tag: ${{ steps.check_major_tag.outputs.next_major_tag }}"
+          git tag "${{ steps.check_major_tag.outputs.next_major_tag }}"
+          git push origin "${{ steps.check_major_tag.outputs.next_major_tag }}"
+
+      - name: Create new semantic version tag
+        run: |
+          echo "Creating new semantic version tag: ${{ steps.next_version.outputs.next_semantic_tag }}"
+          git tag "${{ steps.next_version.outputs.next_semantic_tag }}"
+          git push origin "${{ steps.next_version.outputs.next_semantic_tag }}"
