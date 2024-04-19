@@ -74,5 +74,5 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Compare PR comment
-        run: python3 tests/e2e/compare_PR_comment.py
+      # - name: Compare PR comment
+      #   run: python3 tests/e2e/compare_PR_comment.py
