@@ -17,5 +17,8 @@
 
   "python.defaultInterpreterPath": ".venv/bin/python",
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": ["--ignore=pipenv-project"]
+  "python.testing.pytestArgs": [
+    "--ignore=pipenv-project",
+    "--ignore=development/pipenv-project-to-replace"
+  ]
 }
