@@ -48,5 +48,6 @@ jobs:
         run: |
           pip-licenses \
           --allow-only="Apache Software License;MIT License;BSD License; \
-          Python Software Foundation License;The Unlicense (Unlicense);" \
-          --ignore-packages python-mutation-report
+          Python Software Foundation License;The Unlicense (Unlicense);"
+        # --ignore-packages python-mutation-report
+        # If local environment, python-mutation-report is in list of installed packages, so need to ignore it.
