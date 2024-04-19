@@ -58,6 +58,7 @@ jobs:
           where-to-run-test: "pipenv-project"
 
       - name: Revert last commit
+        # TODO: Always revert the last commit, even if mutation report failed
         run: |
           git reset --hard HEAD~1
           git push origin ${{ github.head_ref }} --force
@@ -74,5 +75,5 @@ jobs:
         with:
           python-version: "3.11"
 
-      # - name: Compare PR comment
-      #   run: python3 tests/e2e/compare_PR_comment.py
+      - name: Compare PR comment
+        run: python3 tests/e2e/compare_PR_comment.py
