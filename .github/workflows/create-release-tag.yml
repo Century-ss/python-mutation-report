@@ -1,4 +1,4 @@
-name: Create a new version of the release tag
+name: 🔖 Create new release tag
 
 on:
   workflow_dispatch:
