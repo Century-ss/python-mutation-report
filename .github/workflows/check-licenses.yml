@@ -45,13 +45,8 @@ jobs:
         run: pip-licenses --order=license
 
       - name: Run Licenses Check
-        run: >
-          pip-licenses
-          --allow-only="
-            Apache Software License;
-            MIT License;
-            BSD License;
-            Python Software Foundation License;
-            The Unlicense (Unlicense);"
-          --ignore-packages
-            python-mutation-report
+        run: |
+          pip-licenses \
+          --allow-only="Apache Software License;MIT License;BSD License; \
+          Python Software Foundation License;The Unlicense (Unlicense);" \
+          --ignore-packages python-mutation-report
