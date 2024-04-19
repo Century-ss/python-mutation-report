@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - "requirements.lock"
+      - "requirements-dev.lock"
+      - ".github/workflows/check-licenses.yml"
 
 jobs:
   license-check:
@@ -26,9 +27,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sed '/-e/d' requirements.lock > requirements.txt
+          sed '/-e/d' requirements-dev.lock > requirements.txt
           pip install --no-cache-dir -r requirements.txt
-          pip install pip-licenses
+
+      - name: Install dependencies for sample-project
+        run: |
+          python3 scripts/generate_requirements.py
+          pip install --no-cache-dir -r requirements.txt
+        env:
+          LOCK_FILE_PATH: "pipenv-project/Pipfile.lock"
+        shell: bash
+
+      - name: Install pip-licenses
+        run: pip install pip-licenses
 
       - name: Show list of installed packages
         run: pip-licenses --order=license
@@ -40,4 +51,7 @@ jobs:
             Apache Software License;
             MIT License;
             BSD License;
-            "
+            Python Software Foundation License;
+            The Unlicense (Unlicense);"
+          --ignore-packages
+            python-mutation-report
