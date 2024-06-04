@@ -33,7 +33,7 @@ class Test_GenerateRequirements:
         main(input_lock_file_path)
         with open(self.OUTPUT_FILE_PATH, "r") as f:
             actual = f.read()
-        assert actual == ("beautifulsoup4==4.12.3\n" + "requests==2.31.0\n")
+        assert actual == ("beautifulsoup4==4.12.3\n" + "mutmut==2.4.4\n")
 
     def test_システム用のryeのlockファイルからmoduleのバージョンだけを抽出してrequirementsを生成する(
         self,
