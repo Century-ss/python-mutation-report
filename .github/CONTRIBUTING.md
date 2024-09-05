@@ -1,4 +1,4 @@
-# Contribution Guidelines
+# Contributing Guidelines
 
 ## How to release a new version
 1. Run `create-release-tag.yml` on the main branch.
