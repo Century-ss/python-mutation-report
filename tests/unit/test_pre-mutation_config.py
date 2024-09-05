@@ -29,7 +29,7 @@ class Test_GenerateMutmutConfig:
     def _get_expected_mutmut_config_path(self, filename: str) -> str:
         return os.path.join("tests/data/expected", filename)
 
-    def test_configファイルが無かった場合にpre_mutation関数のあるconfigを作成する(
+    def test_create_config_with_pre_mutation_function_if_config_does_not_exist(
         self,
     ) -> None:
         main(
@@ -45,7 +45,7 @@ class Test_GenerateMutmutConfig:
 
         assert actual == expected
 
-    def test_configファイルが存在しpre_mutation関数がない場合pre_mutation関数を追記する(
+    def test_add_pre_mutation_function_if_missing_in_existing_config(
         self,
     ) -> None:
         with open(self.MUTMUT_CONFIG_PATH, "w") as f:
@@ -64,7 +64,7 @@ class Test_GenerateMutmutConfig:
 
         assert actual == expected
 
-    def test_configファイルが存在しpre_mutation関数がある場合は何も追記しない(self) -> None:
+    def test_no_update_when_pre_mutation_function_exists_in_config(self) -> None:
         with open(self.MUTMUT_CONFIG_PATH, "w") as f:
             f.write("def pre_mutation() -> None:\n    pass\n")
 
