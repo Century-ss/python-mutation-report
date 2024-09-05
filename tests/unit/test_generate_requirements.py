@@ -19,14 +19,14 @@ class Test_GenerateRequirements:
     def _get_input_lock_file_path(self, lock_file_name: str) -> str:
         return os.path.join("tests/data/input/lockfile", lock_file_name)
 
-    def test_pipenvのlockファイルはdevelopを優先してrequirementsを生成する(self) -> None:
+    def test_pipenv_lock_prioritizes_development_dependencies(self) -> None:
         input_lock_file_path = self._get_input_lock_file_path("Pipfile.lock")
         main(lock_file_path=input_lock_file_path)
         with open(self.OUTPUT_FILE_PATH, "r") as f:
             actual = f.read()
         assert actual == ("beautifulsoup4==4.11.2\n" + "click==8.1.7\n" + "prettytable==3.10.0\n")
 
-    def test_pipのlockファイルは同じ内容のファイルを生成する(
+    def test_pip_lock_generates_identical_file(
         self,
     ) -> None:
         input_lock_file_path = self._get_input_lock_file_path("requirements.txt")
@@ -35,7 +35,7 @@ class Test_GenerateRequirements:
             actual = f.read()
         assert actual == ("beautifulsoup4==4.12.3\n" + "mutmut==2.4.4\n")
 
-    def test_システム用のryeのlockファイルからmoduleのバージョンだけを抽出してrequirementsを生成する(
+    def test_extract_module_versions_from_system_rye_lock_and_generate_requirements(
         self,
     ) -> None:
         input_lock_file_path = self._get_input_lock_file_path("requirements.lock")
@@ -44,7 +44,7 @@ class Test_GenerateRequirements:
             actual = f.read()
         assert actual == ("beautifulsoup4==4.10.0\n" + "soupsieve==2.2\n")
 
-    def test_開発用のryeのlockファイルからmoduleのバージョンだけを抽出してrequirementsを生成する(
+    def test_extract_module_versions_from_development_rye_lock_and_generate_requirements(
         self,
     ) -> None:
         input_lock_file_path = self._get_input_lock_file_path("requirements-dev.lock")
@@ -58,7 +58,7 @@ class Test_GenerateRequirements:
             + "soupsieve==2.5\n"
         )
 
-    def test_未知のlockファイルを指定するとValueErrorを送出する(self) -> None:
+    def test_unknown_lock_file_raises_value_error(self) -> None:
         input_lock_file_path = self._get_input_lock_file_path("unknown.lock")
         with pytest.raises(ValueError):
             main(input_lock_file_path)
