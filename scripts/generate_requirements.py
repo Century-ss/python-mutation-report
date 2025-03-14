@@ -13,7 +13,7 @@ def get_package_versions_from_pipenv(lock_file_path: str) -> str:
         print(e)
         print("Duplicate packages have priority over the develop version.")
         packages = lock_file["default"] | lock_file["develop"]
-
+#
     package_versions = [
         f"{package}{info['version'] if 'version' in info else ''}\n"
         for package, info in packages.items()
