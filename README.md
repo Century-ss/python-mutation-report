@@ -56,7 +56,7 @@ jobs:
           python-version: "3.11"
 ```
 
-## Notes
+## Note
 - Only `pull_request` events are supported.
 - Perform mutation test only on `pull_request` changed lines in files under `src-directory`.
 - Only `ubuntu` and `mac os` runners are supported.
