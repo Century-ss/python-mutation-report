@@ -18,6 +18,7 @@ def get_package_versions_from_pipenv(lock_file_path: str) -> str:
         f"{package}{info['version'] if 'version' in info else ''}\n"
         for package, info in packages.items()
     ]
+    #
     return "".join(package_versions)
 
 
